@@ -1,0 +1,39 @@
+{
+    "manifest_version": 2,
+    "name": "__MSG_name__",
+    "version": "1.0.0",
+    "minimum_chrome_version": "40",
+
+    "default_locale": "zh_CN",
+    "description": "__MSG_description__",
+    "icons": {
+      "16": "./img/icons/icon_16.png",
+      "48": "./img/icons/icon_48.png",
+      "128": "./img/icons/icon_128.png"
+    },
+    
+    "background": {
+        "scripts": [
+            "./main.js"
+        ],
+        "persistent": false
+    },
+
+    "content_scripts": [
+        {
+            "matches": ["*://space.bilibili.com/*"],
+            "js": [
+                "./content.js"
+            ]
+        }
+    ],
+    
+    "permissions": [
+        "http://*.bilibili.com/*",
+        "tabs",
+        "activeTab",
+        "storage"
+    ],
+    
+    "homepage_url": "http://your.website/extensions/"
+}
