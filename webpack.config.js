@@ -12,7 +12,7 @@ module.exports = {
     devtool: isDevelopMode ? 'inline-source-map' : 'nosources-source-map',
     entry: {
         main: path.resolve(__dirname, 'src/js/main.js'),
-        content: path.resolve(__dirname, './src/js/content-page/content.js')
+        favorite: path.resolve(__dirname, './src/js/content-page/favorite.js')
     },
     output: {
         path: path.resolve(__dirname, `${directory}/`),
@@ -62,7 +62,7 @@ module.exports = {
             copyUnmodified: true,
             debug: 'warning'
         }),
-        new ExtractTextPlugin({filename: '[name].css', disable: false, allChunks: true})
+        new ExtractTextPlugin({filename: 'css/[name].css', disable: false, allChunks: true})
     ]
 }
 

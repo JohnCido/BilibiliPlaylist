@@ -23,7 +23,7 @@
         {
             "matches": ["*://space.bilibili.com/*"],
             "js": [
-                "./content.js"
+                "./favorite.js"
             ]
         }
     ],
@@ -33,6 +33,10 @@
         "tabs",
         "activeTab",
         "storage"
+    ],
+
+    "web_accessible_resources": [
+        "css/*"
     ],
     
     "homepage_url": "http://your.website/extensions/"
