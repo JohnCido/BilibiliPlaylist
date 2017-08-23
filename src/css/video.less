@@ -1,0 +1,30 @@
+@import 'basic.less';
+
+.bp-list-item {
+    @h: 32px;
+    width: 100%; height: @h;
+    max-width: 100%;
+    font-size: 12px; line-height: @h; color: fade(black, 87);
+    display: block; text-indent: 18px;
+    cursor: pointer;
+    border-bottom: solid 1px fade(black, 3);
+    transition: color ease-out 0.12s;
+    position: relative;
+
+    &:hover {
+        color: @blue;
+    }
+
+    &.active {
+        color: @blue;
+
+        &:before {
+            content: 'play_arrow';
+            .material-icons;
+            font-size: 18px; text-indent: 0;
+            width: 18px; height: 18px;
+            position: absolute; left: 0; top: 0; bottom: 0;
+            margin: auto;
+        }
+    }
+}

@@ -75,14 +75,14 @@ function init() {
         util.append(listContainer, util.create({
             type: 'i',
             class: 'material-icons bp-button',
-            inner: 'playlist_play',
+            inner: 'play_arrow',
             prop: [['title', '按列表播放这个收藏夹']],
             event: [['onclick', play]]
         }))
         util.append(listContainer, util.create({
             type: 'i',
             class: 'material-icons bp-button',
-            inner: 'autorenew',
+            inner: 'file_download',
             prop: [['title', '刷新这个收藏夹的本地缓存']],
             event: [['onclick', update]]
         }))
@@ -95,7 +95,7 @@ function init() {
             type: 'span',
             id: 'bp-save-all',
             class: 'icon-add material-icons bp-button',
-            inner: 'file_download',
+            inner: 'cloud_download',
             prop: [
                 ['title', '缓存所有收藏夹列表'],
                 ['style', 'right:34px']
@@ -104,14 +104,17 @@ function init() {
         }))
     }
 
-    if (initialized) return
+    if (initialized) { return }
     util.AddSheetFile(`${chrome.extension.getURL('css/')}favorite.css`)
     initialized = true
 }
 
+import openList from '../openList'
 //Play as list
 function play() {
-    console.log('begin play')
+    openList(favListId(), success => {
+
+    })
 }
 
 //Update cache of current list
