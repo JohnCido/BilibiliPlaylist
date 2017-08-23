@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "async": "^2.5.0",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "material-design-icons": "^3.0.1"
   }
 }

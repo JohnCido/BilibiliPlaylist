@@ -1,5 +1,29 @@
-#bp-play {
-    font-size: 12px;
-    cursor: pointer;
-    margin-left: 16px;
+@import 'basic.less';
+.breadcrumb {
+    position: relative;
+}
+
+.bp-button {
+    color: @gray;
+    transition: color ease-out 0.12s;
+    
+    &:hover {
+        color: @pink;
+    }
+}
+
+#bp-list-container {
+    position: absolute;
+    top: 0; bottom: 0; right: 0;
+
+    i {
+        height: 24px;
+        font-size: 18px;
+        cursor: pointer;
+        margin: 0 4px;
+    }
+}
+
+.bp-save-all {
+    line-height: 30px; font-size: 18px;
 }

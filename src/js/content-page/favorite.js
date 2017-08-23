@@ -1,9 +1,17 @@
 require('../../css/favorite.less')
+import util from '../util'
+import dom from '../domNode'
+import whilst from 'async/whilst';
 
-window.addEventListener('hashchange', validate)
-window.onload = function () {
-    validate()
-}
+//If extension is initialized on this page
+var initialized = false
+const pageUrlReg = /^(?:http|https):\/\/space\.bilibili\.com\/\d+\/#!\/favlist\?fid=(\d+)$/
+
+//Favlist objects
+var allList
+var favTitle
+var favCount
+var listPager
 
 function $(id) {
     return document.getElementById(id)
@@ -13,98 +21,141 @@ function $c(c) {
     return document.getElementsByClassName(c)
 }
 
-//param: type id class prop data css inner event
-function create(param) {
-    //print(param);
-    var t;
-    if (param.type !== 'svg' && param.type !== 'path' && param.type !== 'circle')
-        t = document.createElement(param.type);
-    else
-        t = document.createElementNS('http://www.w3.org/2000/svg', param.type);
-    if (param.class) t.className = param.class;
-    if (param.id) t.id = param.id;
-    if (param.css) {
-        param.css.forEach(function (c) {
-            t.style[c[0]] = c[1];
-        })
-    }
-    if (param.data) {
-        param.data.forEach(function (d) {
-            t.dataset[d[0]] = d[1];
-        })
-    }
-    if (param.prop) {
-        param.prop.forEach(function (p) {
-            t.setAttribute(p[0], p[1]);
-        })
-    }
-    if (param.inner) {
-        t.innerHTML = param.inner;
-    }
-    if (param.event) {
-        param.event.forEach(function (e) {
-            t[e[0]] = e[1];
-        })
-    }
-    return t;
+//Respond to page url change
+window.addEventListener('hashchange', validate)
+window.onload = function () {
+    setTimeout(() => {
+        validate()
+    }, 1500)
 }
 
-//target: append to this target; list: child node(s); first: set true if append at first
-//child: true if return appended child node
-function append(target, list, first = false, child = false) {
-    var node;
-    if (Array.isArray(list)) {
-        list.forEach(function (item, index) {
-            if (first)
-                node = target.insertBefore(item, target.firstChild);
-            else
-                node = target.appendChild(item);
-        })
-    } else {
-        if (first)
-            node = target.insertBefore(list, target.firstChild);
-        else
-            node = target.appendChild(list);
-    }
-    if (child)
-        return node;
-    else
-        return target;
+function favListId() {
+    return pageUrlReg.exec(document.URL)[1]
 }
 
-//append css sheet
-function AddSheetFile(path){
-    document.head.appendChild(create({
-        type: 'link',
-        prop: [
-            ['rel', 'stylesheet'],
-            ['type', 'text/css'],
-            ['href', path]
-        ]
-    }));
-}
-
+//Validate page url, check if it's a favlist page
 function validate() {
     let url = document.URL
-    if (/^(?:http|https):\/\/space\.bilibili\.com\/\d+\/#!\/favlist\?fid=\d+.$/.test(url)) {
+    if (pageUrlReg.test(url)) {
         console.log(`url ${url} got a match`)
         init()
     }
 }
 
+//And play as list button and related CSS
 function init() {
+    allList = $('fav-list-container')
     let title = $c('fav-header fav-header-info')[0].getElementsByClassName('breadcrumb')[0]
-    if ($('bp-play')) { return }
+    favTitle = $c('item cur')[0]
+    favCount = $c('fav-meta')[0].getElementsByClassName('num')[0]
+    listPager = $c('sp-pager')[0]
+    if (initialized) { return }
 
-    AddSheetFile(`${chrome.extension.getURL('css/')}favorite.css`)
-    append(title, create({
-        type: 'span',
-        id: 'bp-play',
-        inner: '列表播放',
+    util.AddSheetFile(`${chrome.extension.getURL('css/')}favorite.css`)
+    //List container
+    let listContainer = util.append(title, util.create({
+        type: 'div',
+        id: 'bp-list-container'
+    }), false, true)
+    util.append(listContainer, util.create({
+        type: 'i',
+        class: 'material-icons bp-button',
+        inner: 'playlist_play',
+        prop: [['title', '按列表播放这个收藏夹']],
         event: [['onclick', play]]
     }))
+    util.append(listContainer, util.create({
+        type: 'i',
+        class: 'material-icons bp-button',
+        inner: 'autorenew',
+        prop: [['title', '刷新这个收藏夹的本地缓存']],
+        event: [['onclick', update]]
+    }))
+    //All lists
+    let navTitle = $c('nav-container fav-container')[0].getElementsByClassName('nav-title')[0]
+    util.append(navTitle, util.create({
+        type: 'span',
+        class: 'icon-add material-icons bp-save-all bp-button',
+        inner: 'file_download',
+        prop: [
+            ['title', '缓存所有收藏夹列表'],
+            ['style', 'right:34px']
+        ],
+        event: [['onclick', saveAll]]
+    }))
+
+    initialized = true
 }
 
+//Play as list
 function play() {
     console.log('begin play')
+}
+
+import videoModel from '../model/video.model'
+import listModel from '../model/list.model'
+//Update cache of current list
+function update(callback) {
+    var count = parseInt(favCount.innerHTML)
+    if (count === 0) {
+        //Empty favlist
+        return
+    }
+
+    let list = listModel(favListId(), favTitle.innerHTML)
+    //Reset to page one
+    util.fireEvent('click', $c('sp-pager-item')[0])
+    const delay = 200
+    setTimeout(function() {
+        whilst(
+            () => count > 0,
+            (cb) => {
+                let array = Array.from($c('small-item'))
+                for (let item of array) {
+                    //Get video info
+                    let cover = item.getElementsByClassName('cover')[0]
+                    let disabledCover = cover.getElementsByClassName('disabled-cover')[0]
+                    if (util.styleValue('display', disabledCover) === 'none') {
+                        let title = item.getElementsByClassName('title')[0]
+                        let vid = videoModel(
+                            /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)$/.exec(title.href)[1],
+                            title.innerHTML,
+                            /^UP主：(.*)$/.exec(cover.getElementsByClassName('meta-mask')[0].getElementsByClassName('meta-info')[0].getElementsByClassName('author')[0].innerHTML)[1]
+                        )
+                        list.vids.push(vid)
+                    }
+                    count--
+                }
+                if (count > 0) {
+                    //Move to next page
+                    util.fireEvent('click', dom.nodeAfter($c('sp-pager-item sp-pager-item-active')[0]))
+                    setTimeout(() => {
+                        cb(null, count)
+                    }, delay)
+                } else {
+                    //Finish fetching
+                    cb(null, count)
+                }
+            },
+            function (err, n) {
+                //Back to page one
+                util.fireEvent('click', $c('sp-pager-item')[0])
+                if (err) {
+                    alert(err)
+                    return
+                }
+                console.log(list)
+                chrome.storage.local.set({ [list.id]: list }, () => {
+                    
+                })
+                //Finish fetch this favlist
+                if (callback && typeof(callback) === 'function') callback()
+            }
+        )
+    }, delay)
+}
+
+//Save all favlist
+function saveAll() {
+
 }

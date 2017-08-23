@@ -21,15 +21,22 @@
 
     "content_scripts": [
         {
+            "run_at": "document_end",
             "matches": ["*://space.bilibili.com/*"],
             "js": [
                 "./favorite.js"
+            ]
+        },
+        {
+            "run_at": "document_end",
+            "matches": ["*://www.bilibili.com/video/*"],
+            "js": [
+                "./video.js"
             ]
         }
     ],
     
     "permissions": [
-        "http://*.bilibili.com/*",
         "tabs",
         "activeTab",
         "storage"

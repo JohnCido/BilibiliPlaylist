@@ -12,7 +12,8 @@ module.exports = {
     devtool: isDevelopMode ? 'inline-source-map' : 'nosources-source-map',
     entry: {
         main: path.resolve(__dirname, 'src/js/main.js'),
-        favorite: path.resolve(__dirname, './src/js/content-page/favorite.js')
+        favorite: path.resolve(__dirname, './src/js/content-page/favorite.js'),
+        video: path.resolve(__dirname, './src/js/content-page/video.js')
     },
     output: {
         path: path.resolve(__dirname, `${directory}/`),
@@ -49,7 +50,7 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['js', 'es6', 'json', 'less']
+        extensions: ['.js', '.es6', '.json', '.less']
     },
 
     plugins: [
