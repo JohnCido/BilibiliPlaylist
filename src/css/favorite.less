@@ -14,7 +14,7 @@
 
 #bp-list-container {
     position: absolute;
-    top: 0; bottom: 0; right: 0;
+    top: 20px; right: 16px;
 
     i {
         height: 24px;
@@ -26,4 +26,39 @@
 
 #bp-save-all {
     line-height: 30px; font-size: 18px;
+}
+
+#bp-overlay {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 10000;
+    background: @pink;
+    display: none;
+    transition: opacity ease-out 0.24s;
+
+    @keyframes spin {
+        from {
+            transform:rotate(360deg);
+        }
+        to {
+            transform:rotate(0deg);
+        }
+    }
+    &:before {
+        content: 'cached';
+        width: 48px; height: 48px;
+        .material-icons;
+        color: white;
+        font-size: 48px;
+        position: absolute;
+        margin: auto; top: 0; bottom: 0; left: 0; right: 0;
+        animation: spin 1.6s infinite ease;
+    }
+
+    #bp-progress {
+        position: absolute; left: 0; top: 0;
+        width: 0; height: 2px;
+        background: white;
+        transition: width ease-in-out 0.12s;
+    }
 }

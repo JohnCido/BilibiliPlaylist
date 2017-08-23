@@ -50,14 +50,25 @@ function validate() {
 //And play as list button and related CSS
 function init() {
     allList = $('fav-list-container')
-    let title = $c('fav-header fav-header-info')[0].getElementsByClassName('breadcrumb')[0]
     favTitle = $c('item cur')[0]
     favCount = $c('fav-meta')[0].getElementsByClassName('num')[0]
     listPager = $c('sp-pager')[0]
 
+    //Overlay
+    if (!$('bp-overlay')) {
+        overlay = util.append(document.body, util.create({
+            type: 'div',
+            id: 'bp-overlay'
+        }), true, true)
+        progress = util.append(overlay, util.create({
+            type: 'div',
+            id: 'bp-progress'
+        }), true, true)
+    }
+
     //List container
     if (!$('bp-list-container')) {
-        let listContainer = util.append(title, util.create({
+        let listContainer = util.append($c('fav-main')[0], util.create({
             type: 'div',
             id: 'bp-list-container'
         }), false, true)
@@ -108,7 +119,13 @@ import videoModel from '../model/video.model'
 import listModel from '../model/list.model'
 
 function update(callback) {
-    var count = parseInt(favCount.innerHTML)
+    let isChained = callback && typeof(callback) === 'function'
+
+    const delay = 300
+    const total = parseInt(favCount.innerHTML)
+    var count = total
+    if (count > 60) { showOverlay() }
+
     if (count === 0) {
         //Empty favlist
         chrome.storage.local.remove(favListId(), () => {})
@@ -127,10 +144,18 @@ function update(callback) {
         //isPrivate
         $c('fav-meta')[0].getElementsByClassName('type')[0].innerHTML === '私有'
     )
-    //Reset to page one
+    //Reset page
     util.fireEvent('click', $c('sp-pager-item')[0])
-    const delay = 200
-    setTimeout(function() {
+    util.fireEvent(
+        'click',
+        Array.from($c('sort-item')).find(item => dom.firstChild(item).innerHTML === '全部分区')
+    )
+    util.fireEvent(
+        'click',
+        Array.from($c('action-item')).find(item => item.innerHTML === ' 最近收藏 ')
+    )
+
+    setTimeout(() => {
         whilst(
             () => count > 0,
             (cb) => {
@@ -151,7 +176,9 @@ function update(callback) {
                         )
                         list.vids.push(vid)
                     }
+                    //Count down
                     count--
+                    if (!isChained) { updateProgress(1 - count / total) }
                 }
                 if (count > 0) {
                     //Move to next page
@@ -164,17 +191,22 @@ function update(callback) {
                     cb(null, count)
                 }
             },
-            function (err, n) {
-                //Back to page one
-                util.fireEvent('click', $c('sp-pager-item')[0])
+            (err, n) => {
                 if (err) {
                     alert(err)
                     return
                 }
-                console.log(list)
+                //Back to page one
+                util.fireEvent('click', $c('sp-pager-item')[0])
+
+                //console.log(list)
                 chrome.storage.local.set({ [list.id]: list }, () => { })
                 //Finish fetch this favlist
-                if (callback && typeof(callback) === 'function') callback()
+                if (!isChained) { hideOverlay() }
+
+                if (isChained) {
+                    callback()
+                }
             }
         )
     }, delay)
@@ -182,5 +214,75 @@ function update(callback) {
 
 //Save all favlist
 function saveAll() {
+    //Overlay
+    showOverlay()
 
+    const delay = 600
+    let list = $c('fav-list')[0]
+    const total = list.children.length
+    var count = total
+    window.location = hrefOf(dom.firstChild(list))
+    setTimeout(() => {
+        whilst(
+            () => count > 0,
+            (cb) => {
+                update(() => {
+                    count--
+                    updateProgress(1 - count / total)
+
+                    if (count > 0) {
+                        //Move to next folder
+                        window.location = hrefOf(dom.nodeAfter($c('fav-item cur')[0]))
+                        setTimeout(() => {
+                            cb(null, count)
+                        }, delay);
+                    } else {
+                        //Finish favList
+                        cb(null, count)
+                    }
+                })
+            },
+            (err, n) => {
+                if (err) {
+                    alert(err)
+                    return
+                }
+                //Fetch default folder
+                window.location = hrefOf($c('fav-item default-fav')[0])
+                setTimeout(() => {
+                    update(() => {
+                        //All done
+                        hideOverlay()
+                    })
+                }, delay)
+            }
+        )
+    }, delay)
+
+    function hrefOf(item) {
+        return item.getElementsByClassName('text v-link-active')[0].href
+    }
+}
+
+//Overlay and progress functions
+var overlay
+var progress
+
+function showOverlay() {
+    document.body.style.overflow = 'hidden'
+    overlay.style.display = 'block'
+    overlay.style.opacity = 1
+}
+
+function hideOverlay() {
+    overlay.style.opacity = 0
+    setTimeout(function() {
+        overlay.style.display = 'none'
+        updateProgress(0)
+        document.body.style.overflow = 'auto'
+    }, 250);
+}
+
+function updateProgress(p) {
+    progress.style.width = `${p * 100}%`
 }
