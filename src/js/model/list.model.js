@@ -1,9 +1,11 @@
-export default function(id, name, personal, private) {
+export default function(id, name, owner, personal, priv) {
     return {
         id: id,
         name: name,
+        updatedOn: new Date().toUTCString(),
+        owner: owner,
         personal: personal,
-        private: private,
+        priv: priv,
         vids: []
     }
 }

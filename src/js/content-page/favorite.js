@@ -6,6 +6,7 @@ import whilst from 'async/whilst';
 //If extension is initialized on this page
 var initialized = false
 const pageUrlReg = /^(?:http|https):\/\/space\.bilibili\.com\/\d+\/#!\/favlist\?fid=(\d+)$/
+const videoUrlReg = /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)$/
 
 //Favlist objects
 var allList
@@ -34,7 +35,7 @@ window.onload = function () {
 }
 
 function favListId() {
-    return pageUrlReg.exec(document.URL)[1]
+    return $c('fav-item cur')[0].getAttribute('fid')
 }
 
 //Validate page url, check if it's a favlist page
@@ -102,17 +103,30 @@ function play() {
     console.log('begin play')
 }
 
+//Update cache of current list
 import videoModel from '../model/video.model'
 import listModel from '../model/list.model'
-//Update cache of current list
+
 function update(callback) {
     var count = parseInt(favCount.innerHTML)
     if (count === 0) {
         //Empty favlist
+        chrome.storage.local.remove(favListId(), () => {})
         return
     }
 
-    let list = listModel(favListId(), favTitle.innerHTML, true, true)
+    let list = listModel(
+        //id
+        favListId(),
+        //name
+        favTitle.innerHTML,
+        //owner
+        $('h-name').innerHTML,
+        //isPersonal
+        dom.firstChild($c('uname')[0]).innerHTML === $('h-name').innerHTML,
+        //isPrivate
+        $c('fav-meta')[0].getElementsByClassName('type')[0].innerHTML === '私有'
+    )
     //Reset to page one
     util.fireEvent('click', $c('sp-pager-item')[0])
     const delay = 200
@@ -124,13 +138,16 @@ function update(callback) {
                 for (let item of array) {
                     //Get video info
                     let cover = item.getElementsByClassName('cover')[0]
-                    let disabledCover = cover.getElementsByClassName('disabled-cover')[0]
-                    if (util.styleValue('display', disabledCover) === 'none') {
-                        let title = item.getElementsByClassName('title')[0]
+                    let info = cover.getElementsByClassName('meta-mask')[0].getElementsByClassName('meta-info')[0]
+                    let title = item.getElementsByClassName('title')[0]
+                    if (videoUrlReg.test(title.href)) {
                         let vid = videoModel(
-                            /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)$/.exec(title.href)[1],
+                            //av
+                            videoUrlReg.exec(title.href)[1],
+                            //name
                             title.innerHTML,
-                            /^UP主：(.*)$/.exec(cover.getElementsByClassName('meta-mask')[0].getElementsByClassName('meta-info')[0].getElementsByClassName('author')[0].innerHTML)[1]
+                            //up
+                            /^UP主：(.*)$/.exec(info.getElementsByClassName('author')[0].innerHTML)[1]
                         )
                         list.vids.push(vid)
                     }
@@ -155,9 +172,7 @@ function update(callback) {
                     return
                 }
                 console.log(list)
-                chrome.storage.local.set({ [list.id]: list }, () => {
-
-                })
+                chrome.storage.local.set({ [list.id]: list }, () => { })
                 //Finish fetch this favlist
                 if (callback && typeof(callback) === 'function') callback()
             }
