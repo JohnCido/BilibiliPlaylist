@@ -22,7 +22,11 @@ function $c(c) {
 }
 
 //Respond to page url change
-window.addEventListener('hashchange', validate)
+window.addEventListener('hashchange', () => {
+    setTimeout(function() {
+        validate()
+    }, 200);
+})
 window.onload = function () {
     setTimeout(() => {
         validate()
@@ -37,7 +41,7 @@ function favListId() {
 function validate() {
     let url = document.URL
     if (pageUrlReg.test(url)) {
-        console.log(`url ${url} got a match`)
+        //console.log(`url ${url} got a match`)
         init()
     }
 }
@@ -49,41 +53,47 @@ function init() {
     favTitle = $c('item cur')[0]
     favCount = $c('fav-meta')[0].getElementsByClassName('num')[0]
     listPager = $c('sp-pager')[0]
-    if (initialized) { return }
 
-    util.AddSheetFile(`${chrome.extension.getURL('css/')}favorite.css`)
     //List container
-    let listContainer = util.append(title, util.create({
-        type: 'div',
-        id: 'bp-list-container'
-    }), false, true)
-    util.append(listContainer, util.create({
-        type: 'i',
-        class: 'material-icons bp-button',
-        inner: 'playlist_play',
-        prop: [['title', '按列表播放这个收藏夹']],
-        event: [['onclick', play]]
-    }))
-    util.append(listContainer, util.create({
-        type: 'i',
-        class: 'material-icons bp-button',
-        inner: 'autorenew',
-        prop: [['title', '刷新这个收藏夹的本地缓存']],
-        event: [['onclick', update]]
-    }))
-    //All lists
-    let navTitle = $c('nav-container fav-container')[0].getElementsByClassName('nav-title')[0]
-    util.append(navTitle, util.create({
-        type: 'span',
-        class: 'icon-add material-icons bp-save-all bp-button',
-        inner: 'file_download',
-        prop: [
-            ['title', '缓存所有收藏夹列表'],
-            ['style', 'right:34px']
-        ],
-        event: [['onclick', saveAll]]
-    }))
+    if (!$('bp-list-container')) {
+        let listContainer = util.append(title, util.create({
+            type: 'div',
+            id: 'bp-list-container'
+        }), false, true)
+        util.append(listContainer, util.create({
+            type: 'i',
+            class: 'material-icons bp-button',
+            inner: 'playlist_play',
+            prop: [['title', '按列表播放这个收藏夹']],
+            event: [['onclick', play]]
+        }))
+        util.append(listContainer, util.create({
+            type: 'i',
+            class: 'material-icons bp-button',
+            inner: 'autorenew',
+            prop: [['title', '刷新这个收藏夹的本地缓存']],
+            event: [['onclick', update]]
+        }))
+    }
 
+    //All lists
+    if (!$('bp-save-all')) {
+        let navTitle = $c('nav-container fav-container')[0].getElementsByClassName('nav-title')[0]
+        util.append(navTitle, util.create({
+            type: 'span',
+            id: 'bp-save-all',
+            class: 'icon-add material-icons bp-button',
+            inner: 'file_download',
+            prop: [
+                ['title', '缓存所有收藏夹列表'],
+                ['style', 'right:34px']
+            ],
+            event: [['onclick', saveAll]]
+        }))
+    }
+
+    if (initialized) return
+    util.AddSheetFile(`${chrome.extension.getURL('css/')}favorite.css`)
     initialized = true
 }
 
@@ -102,7 +112,7 @@ function update(callback) {
         return
     }
 
-    let list = listModel(favListId(), favTitle.innerHTML)
+    let list = listModel(favListId(), favTitle.innerHTML, true, true)
     //Reset to page one
     util.fireEvent('click', $c('sp-pager-item')[0])
     const delay = 200
@@ -146,7 +156,7 @@ function update(callback) {
                 }
                 console.log(list)
                 chrome.storage.local.set({ [list.id]: list }, () => {
-                    
+
                 })
                 //Finish fetch this favlist
                 if (callback && typeof(callback) === 'function') callback()
