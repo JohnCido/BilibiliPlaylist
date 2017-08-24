@@ -23,9 +23,7 @@ window.addEventListener('hashchange', () => {
     }, 250);
 })
 window.onload = function () {
-    setTimeout(() => {
-        validate()
-    }, 1500)
+    validate()
 }
 
 //Validate page url, check if it's a favlist page
@@ -52,7 +50,7 @@ function init() {
         let video = dom.firstChild($c('bilibili-player-video')[0])
         video.addEventListener('ended', next)
         video.play()
-    }, 300)
+    }, 250)
 
     //Remove current breadcrumbs
     infoBar = $c('tminfo')[0]

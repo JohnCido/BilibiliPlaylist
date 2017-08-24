@@ -61,4 +61,5 @@ typings/
 develop/
 production/
 public/
+store/
 cache/
