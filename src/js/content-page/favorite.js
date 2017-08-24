@@ -5,7 +5,7 @@ import whilst from 'async/whilst';
 
 //If extension is initialized on this page
 var initialized = false
-const pageUrlReg = /^(?:http|https):\/\/space\.bilibili\.com\/\d+\/#!\/favlist\?fid=(\d+)$/
+const pageUrlReg = /^(?:http|https):\/\/space\.bilibili\.com\/(\d+)\/.*favlist\?fid=(\d+)$/
 const videoUrlReg = /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)$/
 
 //Favlist objects
@@ -142,6 +142,8 @@ function update(callback) {
         favTitle.innerHTML,
         //owner
         $('h-name').innerHTML,
+        //uid
+        pageUrlReg.exec(document.URL)[1],
         //isPersonal
         dom.firstChild($c('uname')[0]).innerHTML === $('h-name').innerHTML,
         //isPrivate

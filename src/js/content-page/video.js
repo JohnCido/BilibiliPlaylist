@@ -6,6 +6,7 @@ var initialized = false
 const pageUrlReg = /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)\/\?bpid=(\d+)$/
 
 var listContainer
+var infoBar
 
 function $(id) {
     return document.getElementById(id)
@@ -31,7 +32,6 @@ window.onload = function () {
 function validate() {
     let url = document.URL
     if (pageUrlReg.test(url)) {
-        //console.log(`url ${url} got a match`)
         init()
     }
 }
@@ -53,6 +53,13 @@ function init() {
         video.addEventListener('ended', next)
         video.play()
     }, 300)
+
+    //Remove current breadcrumbs
+    infoBar = $c('tminfo')[0]
+    while (dom.firstChild(infoBar).tagName !== 'TIME') {
+        let b = dom.firstChild(infoBar)
+        b.parentNode.removeChild(b)
+    }
 }
 
 function loadList() {
@@ -62,6 +69,50 @@ function loadList() {
         let list = obj[id]
         if (!list) { return }
 
+        //Load breadcrumbs
+        util.append(
+            infoBar,
+            [
+                //space
+                // util.create({
+                //     type: undefined,
+                //     inner: '    '
+                // }),
+                //Link to fav folder
+                util.append(util.create({
+                    type: 'span',
+                    prop: [['typeof', 'v:Breadcrumb']]
+                }), util.create({
+                    type: 'a',
+                    inner: list.name,
+                    prop: [
+                        ['rel', 'v:url'],
+                        ['property', 'v:title'],
+                        ['href', `https://space.bilibili.com/${list.uid}/#!/favlist?fid=${list.id}`],
+                        ['target', '_blank']
+                    ]
+                })),
+                //Separator
+                util.create({
+                    type: undefined,
+                    inner: ' > '
+                }),
+                //Link to owner profile
+                util.create({
+                    type: 'a',
+                    inner: list.owner,
+                    prop: [
+                        ['rel', 'v:url'],
+                        ['property', 'v:title'],
+                        ['href', `https://space.bilibili.com/${list.uid}/#!/index`],
+                        ['target', '_blank']
+                    ]
+                })
+            ],
+            true
+        )
+
+        //Load video list
         var index = 0
         var lock = false
         for (let vid of list.vids) {
