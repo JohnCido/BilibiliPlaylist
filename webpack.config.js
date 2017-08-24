@@ -12,8 +12,9 @@ module.exports = {
     devtool: isDevelopMode ? 'inline-source-map' : 'nosources-source-map',
     entry: {
         main: path.resolve(__dirname, 'src/js/main.js'),
-        favorite: path.resolve(__dirname, './src/js/content-page/favorite.js'),
-        video: path.resolve(__dirname, './src/js/content-page/video.js')
+        favorite: path.resolve(__dirname, 'src/js/content-page/favorite.js'),
+        video: path.resolve(__dirname, 'src/js/content-page/video.js'),
+        popup: path.resolve(__dirname, 'src/js/popup.js')
     },
     output: {
         path: path.resolve(__dirname, `${directory}/`),
@@ -56,6 +57,7 @@ module.exports = {
     plugins: [
         new CopyFilesPlugin([
             { from: 'src/manifest.json', to: `./manifest.json` },
+            { from: 'src/html', to: `./html` },
             { from: 'src/_locales', to: `./_locales` },
             { from: 'src/img', to: `./img` },
         ], {

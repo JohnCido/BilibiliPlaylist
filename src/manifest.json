@@ -1,6 +1,7 @@
 {
     "manifest_version": 2,
     "name": "__MSG_name__",
+    "short_name": "__MSG_shortName__",
     "version": "1.0.0",
     "minimum_chrome_version": "40",
 
@@ -35,10 +36,16 @@
             ]
         }
     ],
+
+    "page_action": {
+        "default_title": "__MSG_shortName__",
+        "default_popup": "./html/popup.html"
+    },
     
     "permissions": [
         "tabs",
         "activeTab",
+        "declarativeContent",
         "storage"
     ],
 
@@ -46,5 +53,5 @@
         "css/*"
     ],
     
-    "homepage_url": "http://your.website/extensions/"
+    "homepage_url": "https://space.bilibili.com/1528379/#!/index"
 }

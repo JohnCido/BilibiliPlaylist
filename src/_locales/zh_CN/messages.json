@@ -1,8 +1,11 @@
 {
     "name": {
-      "message": "哔哩哔哩播放列表"
+      "message": "哔哩列表：哔哩哔哩收藏夹的列表播放"
+    },
+    "shortName": {
+      "message": "哔哩列表"
     },
     "description": {
-      "message": "针对哔哩哔哩提供播放列表支持"
+      "message": "为哔哩哔哩提供播放列表支持"
     }
 }

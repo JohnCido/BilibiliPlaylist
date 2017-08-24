@@ -1,0 +1,85 @@
+@import 'basic.less';
+
+body {
+    width: 240px; height: 400px; max-height: 400px; overflow: hidden;
+    margin: 0;
+    display: flex; flex-direction: column;
+}
+
+button {
+    width: 56px;
+    outline: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+header {
+    width: 100%; height: 56px; min-height: 56px; max-height: 56px;
+    background: @blue; display: flex; align-items: center;
+    color: white;
+    box-shadow: 0 0 2px 0 fade(black, 12), 0 2px 2px 0 fade(black, 24);
+
+    p {
+        width: 100%;
+        margin: 0;
+        text-indent: 12px;
+
+        &:before {
+            content: '__MSG_shortName__';
+        }
+    }
+
+    button {
+        color: white;
+    }
+}
+
+#list {
+    width: 100%; height: 100%;
+    padding: 0; margin: 0;
+    overflow: auto;
+    padding: 8px 0;
+    position: relative;
+
+    &.empty {
+        &:before {
+            width: 48px; height: 48px;
+            content: 'folder_open';
+            .material-icons; font-size: 48px;
+            color: fade(black, 12);
+            position: absolute; margin: auto;
+            top: 0; bottom: 0; left: 0; right: 0;
+        }
+    }
+}
+
+.item {
+    @h: 40px;
+    width: 100%; max-width: 100%; height: @h;
+    display: flex; flex-direction: row;
+    list-style: none;
+
+    .name {
+        width: 100%;
+        overflow-x: hidden; text-overflow: ellipsis;
+        color: @darkGray;
+        text-align: left; text-indent: 12px;
+        font-size: 13px; line-height: @h;
+        outline: none; text-decoration: none;
+        transition: color ease-out 0.12s;
+
+        &:hover {
+            color: @blue;
+        }
+    }
+
+    .delete {
+        color: @gray;
+        transition: color ease-out 0.12s;
+        
+        &:hover {
+            color: @pink;
+        }
+    }
+}
