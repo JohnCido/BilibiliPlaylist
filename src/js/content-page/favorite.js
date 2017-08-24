@@ -1,6 +1,7 @@
 require('../../css/favorite.less')
 import util from '../util'
 import dom from '../domNode'
+
 import whilst from 'async/whilst';
 
 //If extension is initialized on this page
@@ -84,7 +85,7 @@ function init() {
             class: 'material-icons bp-button',
             inner: 'file_download',
             prop: [['title', '刷新这个收藏夹的本地缓存']],
-            event: [['onclick', update]]
+            event: [['onclick', save]]
         }))
     }
 
@@ -112,16 +113,28 @@ function init() {
 import openList from '../openList'
 //Play as list
 function play() {
+    // var list = db.getList(favListId())
+    // if (list !== undefined) {
+    //     window.open(`https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${list.id}`)
+    // } else {
+    //     save(() => {
+    //         list = db.getList(favListId())
+    //         window.open(`https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${list.id}`)
+    //     }, true)
+    // }
     openList(favListId(), success => {
-
+        if (success) { return }
+        save(() => {
+            openList(favListId())
+        }, true)
     })
 }
 
-//Update cache of current list
+//Save current list
 import videoModel from '../model/video.model'
 import listModel from '../model/list.model'
 
-function update(callback) {
+function save(callback, override = false) {
     let isChained = callback && typeof(callback) === 'function'
 
     const delay = 300
@@ -185,7 +198,7 @@ function update(callback) {
                     }
                     //Count down
                     count--
-                    if (!isChained) { updateProgress(1 - count / total) }
+                    if (!isChained || override) { updateProgress(1 - count / total) }
                 }
                 if (count > 0) {
                     //Move to next page
@@ -208,8 +221,9 @@ function update(callback) {
 
                 //console.log(list)
                 chrome.storage.local.set({ [list.id]: list }, () => { })
+                //db.saveList(list)
                 //Finish fetch this favlist
-                if (!isChained) { hideOverlay() }
+                if (!isChained || override) { hideOverlay() }
 
                 if (isChained) {
                     callback()
@@ -233,7 +247,7 @@ function saveAll() {
         whilst(
             () => count > 0,
             (cb) => {
-                update(() => {
+                save(() => {
                     count--
                     updateProgress(1 - count / total)
 
@@ -257,7 +271,7 @@ function saveAll() {
                 //Fetch default folder
                 window.location = hrefOf($c('fav-item default-fav')[0])
                 setTimeout(() => {
-                    update(() => {
+                    save(() => {
                         //All done
                         hideOverlay()
                     })

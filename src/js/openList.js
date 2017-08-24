@@ -3,7 +3,7 @@ export default function (id, callback) {
     chrome.storage.local.get(id, (obj) => {
         let list = obj[id]
         if (list === undefined || list === null) {
-            alert('请求的列表不存在')
+            //alert('请求的列表不存在')
             callback(false)
             return
         }

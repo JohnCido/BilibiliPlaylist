@@ -2,8 +2,8 @@
     "manifest_version": 2,
     "name": "__MSG_name__",
     "short_name": "__MSG_shortName__",
-    "version": "1.0.0",
-    "minimum_chrome_version": "40",
+    "version": "1.0.1",
+    "minimum_chrome_version": "52",
 
     "default_locale": "zh_CN",
     "description": "__MSG_description__",
