@@ -10,6 +10,21 @@
     border-bottom: solid 1px fade(black, 3);
     transition: color ease-out 0.12s;
     position: relative;
+    display: flex; flex-direction: row;
+    background: white;
+
+    span {
+        &[name] {
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        &[length] {
+            width: 88px; font-weight: 700;
+            text-align: left; text-indent: 12px; opacity: 0.64;
+        }
+    }
 
     &:hover {
         color: @blue;

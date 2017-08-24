@@ -175,7 +175,9 @@ function update(callback) {
                             //name
                             title.innerHTML,
                             //up
-                            /^UP主：(.*)$/.exec(info.getElementsByClassName('author')[0].innerHTML)[1]
+                            /^UP主：(.*)$/.exec(info.getElementsByClassName('author')[0].innerHTML)[1],
+                            //length
+                            cover.getElementsByClassName('length')[0].innerHTML
                         )
                         list.vids.push(vid)
                     }

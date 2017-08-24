@@ -52,7 +52,7 @@ function init() {
         let video = dom.firstChild($c('bilibili-player-video')[0])
         video.addEventListener('ended', next)
         video.play()
-    }, 250)
+    }, 300)
 }
 
 function loadList() {
@@ -62,16 +62,35 @@ function loadList() {
         let list = obj[id]
         if (!list) { return }
 
+        var index = 0
+        var lock = false
         for (let vid of list.vids) {
-            util.append(listContainer, util.create({
+            let isActive = pageUrlReg.exec(document.URL)[1] === vid.av
+            if (!isActive && !lock) { index++ }
+            else { lock = true }
+            let a = util.create({
                 type: 'a',
-                class: `bp-list-item${pageUrlReg.exec(document.URL)[1] === vid.av ? ' active' : ''}`,
-                inner: vid.name,
+                class: `bp-list-item${isActive ? ' active' : ''}`,
                 prop: [
                     ['href', `https://www.bilibili.com/video/av${vid.av}/?bpid=${pageUrlReg.exec(document.URL)[2]}`]
                 ]
-            }), false)
+            })
+            util.append(a, util.create({
+                type: 'span',
+                inner: vid.name,
+                prop: [['name', '']]
+            }))
+            util.append(a, util.create({
+                type: 'span',
+                inner: vid.length,
+                prop: [['length', '']]
+            }))
+            util.append(listContainer, a, false)
         }
+
+        let containerHeight = parseInt(/^(\d+)px$/.exec(util.styleValue('height', listContainer.parentNode)))
+        console.log(util.styleValue('height', listContainer.parentNode))
+        listContainer.style.top = `-${(index - 2.5) * 32 + (index / list.vids.length) * containerHeight * 0.5}px`
     })
 }
 

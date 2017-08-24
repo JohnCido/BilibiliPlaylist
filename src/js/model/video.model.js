@@ -1,7 +1,8 @@
-export default function(av, name, up) {
+export default function(av, name, up, length) {
     return {
         av: av,
         name: name,
-        up: up
+        up: up,
+        length: length
     }
 }
