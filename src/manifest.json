@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "__MSG_name__",
     "short_name": "__MSG_shortName__",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "minimum_chrome_version": "52",
 
     "default_locale": "zh_CN",
@@ -37,7 +37,7 @@
         }
     ],
 
-    "page_action": {
+    "browser_action": {
         "default_title": "__MSG_shortName__",
         "default_popup": "./html/popup.html"
     },
