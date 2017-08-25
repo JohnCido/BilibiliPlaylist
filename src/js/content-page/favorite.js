@@ -103,7 +103,6 @@ function init() {
     initialized = true
 }
 
-import openList from '../openList'
 //Play as list
 function play() {
     save(() => {
