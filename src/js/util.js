@@ -85,5 +85,19 @@ let util = module.exports = {
     styleValue: function (type, el) {
         let style = window.getComputedStyle(el)
         return style.getPropertyValue(type)
+    },
+
+    //Run a test on an interval and call callback when test return true
+    intervalTest: function(test, callback, timeout = 50, tolerance = 2500) {
+        const begin = new Date()
+    
+        let interval = setInterval(() => {
+            const t = new Date() - begin
+            if (t > tolerance) { clearInterval(interval) }
+            if (test()) {
+                callback(t)
+                clearInterval(interval)
+            }
+        }, timeout)
     }
 }
