@@ -77,15 +77,8 @@ function init() {
             type: 'i',
             class: 'material-icons bp-button',
             inner: 'play_arrow',
-            prop: [['title', '按列表播放这个收藏夹']],
+            prop: [['title', '缓存并按照按列表播放当前收藏夹']],
             event: [['onclick', play]]
-        }))
-        util.append(listContainer, util.create({
-            type: 'i',
-            class: 'material-icons bp-button',
-            inner: 'file_download',
-            prop: [['title', '刷新这个收藏夹的本地缓存']],
-            event: [['onclick', save]]
         }))
     }
 
@@ -98,7 +91,7 @@ function init() {
             class: 'icon-add material-icons bp-button',
             inner: 'cloud_download',
             prop: [
-                ['title', '缓存所有收藏夹列表'],
+                ['title', '缓存所有收藏夹为本地列表'],
                 ['style', 'right:34px']
             ],
             event: [['onclick', saveAll]]
@@ -113,21 +106,16 @@ function init() {
 import openList from '../openList'
 //Play as list
 function play() {
-    // var list = db.getList(favListId())
-    // if (list !== undefined) {
-    //     window.open(`https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${list.id}`)
-    // } else {
-    //     save(() => {
-    //         list = db.getList(favListId())
-    //         window.open(`https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${list.id}`)
-    //     }, true)
-    // }
-    openList(favListId(), success => {
-        if (success) { return }
-        save(() => {
-            openList(favListId())
-        }, true)
-    })
+    save(() => {
+        const id = favListId()
+        chrome.storage.local.get(id, (obj) => {
+            let list = obj[id]
+            if (list === undefined || list === null) { return }
+    
+            let url = `https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}`
+            window.open(url)
+        })
+    }, true)
 }
 
 //Save current list
