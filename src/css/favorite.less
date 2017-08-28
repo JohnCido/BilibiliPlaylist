@@ -18,10 +18,26 @@
     top: 20px; right: 16px;
 
     i {
-        height: 24px;
+        width: 24px; height: 24px; line-height: 24px;
         font-size: 18px;
         cursor: pointer;
         margin: 0 4px;
+        position: relative;
+
+        &:before {
+            content: 'check';
+            width: inherit; height: inherit;
+            position: absolute; top: 0; left: 0;
+            background: white; color: @pink;
+            opacity: 0;
+            transition: opacity ease-out 0.12s;
+        }
+    }
+
+    .done {
+        &:before {
+            opacity: 1;
+        }
     }
 }
 

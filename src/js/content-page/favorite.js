@@ -9,6 +9,9 @@ var initialized = false
 const pageUrlReg = /^(?:http|https):\/\/space\.bilibili\.com\/(\d+)\/.*favlist\?fid=(\d+)$/
 const videoUrlReg = /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)$/
 
+//Buttons
+var buttonSave
+
 //Favlist objects
 var allList
 var favTitle
@@ -80,13 +83,13 @@ function init() {
             prop: [['title', '按列表播放这个收藏夹']],
             event: [['onclick', play]]
         }))
-        util.append(listContainer, util.create({
+        buttonSave = util.append(listContainer, util.create({
             type: 'i',
             class: 'material-icons bp-button',
             inner: 'file_download',
             prop: [['title', '刷新这个收藏夹的本地缓存']],
             event: [['onclick', save]]
-        }))
+        }), false, true)
     }
 
     //All lists
@@ -121,11 +124,26 @@ function play() {
     //         window.open(`https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${list.id}`)
     //     }, true)
     // }
-    openList(favListId(), success => {
+    open(favListId(), success => {
         if (success) { return }
         save(() => {
-            openList(favListId())
+            open(favListId())
         }, true)
+    })
+}
+
+function open(id, callback) {
+    chrome.storage.local.get(id, (obj) => {
+        let list = obj[id]
+        if (list === undefined || list === null) {
+            //alert('请求的列表不存在')
+            callback(false)
+            return
+        }
+
+        let url = `https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}`
+        window.open(url)
+        if (callback) callback(true)
     })
 }
 
@@ -139,7 +157,8 @@ function save(callback, override = false) {
     const delay = 300
     const total = parseInt(favCount.innerHTML)
     var count = total
-    if (count > 60) { showOverlay() }
+    const isLongList = count > 60
+    if (isLongList) { showOverlay() }
 
     if (count === 0) {
         //Empty favlist
@@ -185,7 +204,7 @@ function save(callback, override = false) {
                     if (videoUrlReg.test(title.href)) {
                         let vid = videoModel(
                             //av
-                            videoUrlReg.exec(title.href)[1],
+                            item.dataset.aid,
                             //name
                             title.innerHTML,
                             //up
@@ -226,6 +245,12 @@ function save(callback, override = false) {
 
                 if (isChained) {
                     callback()
+                }
+                if (!isLongList && !isChained && !override) {
+                    buttonSave.classList.add('done')
+                    setTimeout(function() {
+                        buttonSave.classList.remove('done')
+                    }, 1200);
                 }
             }
         )
