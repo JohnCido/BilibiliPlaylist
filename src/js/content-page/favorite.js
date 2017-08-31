@@ -39,7 +39,7 @@ window.onload = function () {
 }
 
 function favListId() {
-    return $c('fav-item cur')[0].getAttribute('fid')
+    return pageUrlReg.exec(document.URL)[2]
 }
 
 //Validate page url, check if it's a favlist page
@@ -148,7 +148,7 @@ function open(id, callback) {
 }
 
 //Save current list
-import videoModel from '../model/video.model'
+import videoMiner from '../model/video.miner'
 import listModel from '../model/list.model'
 
 function save(callback, override = false) {
@@ -198,22 +198,8 @@ function save(callback, override = false) {
                 let array = Array.from($c('small-item'))
                 for (let item of array) {
                     //Get video info
-                    let cover = item.getElementsByClassName('cover')[0]
-                    let info = cover.getElementsByClassName('meta-mask')[0].getElementsByClassName('meta-info')[0]
-                    let title = item.getElementsByClassName('title')[0]
-                    if (videoUrlReg.test(title.href)) {
-                        let vid = videoModel(
-                            //av
-                            item.dataset.aid,
-                            //name
-                            title.innerHTML,
-                            //up
-                            /^UP主：(.*)$/.exec(info.getElementsByClassName('author')[0].innerHTML)[1],
-                            //length
-                            cover.getElementsByClassName('length')[0].innerHTML
-                        )
-                        list.vids.push(vid)
-                    }
+                    let vid = videoMiner(item)
+                    if (vid !== undefined) { list.vids.push(vid) }
                     //Count down
                     count--
                     if (!isChained || override) { updateProgress(1 - count / total) }
@@ -221,9 +207,13 @@ function save(callback, override = false) {
                 if (count > 0) {
                     //Move to next page
                     util.fireEvent('click', dom.nodeAfter($c('sp-pager-item sp-pager-item-active')[0]))
-                    setTimeout(() => {
-                        cb(null, count)
-                    }, delay)
+                    util.intervalTest(
+                        () => !$c('small-item')[0].classList.contains('bp-fetched'),
+                        () => {
+                            cb(null, count)
+                        },
+                        10
+                    )
                 } else {
                     //Finish fetching
                     cb(null, count)
@@ -280,7 +270,7 @@ function saveAll() {
                         window.location = hrefOf(dom.nodeAfter($c('fav-item cur')[0]))
                         setTimeout(() => {
                             cb(null, count)
-                        }, delay);
+                        }, delay)
                     } else {
                         //Finish favList
                         cb(null, count)

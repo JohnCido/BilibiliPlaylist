@@ -3,11 +3,14 @@ import util from '../util'
 import dom from '../domNode'
 
 var initialized = false
+var loaded = false
 const pageUrlReg = /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)\/\?bpid=(\d+)$/
 
 var list
 var listContainer
 var infoBar
+
+var nextVideoIndex
 
 function $(id) {
     return document.getElementById(id)
@@ -60,17 +63,25 @@ function init() {
     listButton.getElementsByClassName('bpui-button-text')[0].innerHTML = '播放列表'
     util.fireEvent('click', listButton)
     //Load list into panel
-    let listPanel = $c('bilibili-player-recommend')[0]
+    listContainer = $c('bilibili-player-recommend')[0]
     util.intervalTest(() => {
-        return listPanel.innerHTML !== ''
+        return listContainer.innerHTML !== ''
     }, () => {
         loadList()
-    }, 20)
+    }, 50)
+    setTimeout(() => {
+        if (listContainer.innerHTML === '') {
+            loadList()
+        }
+    }, 500)
     initialized = true
 }
 
 function loadList() {
-    listContainer = dom.firstChild(dom.firstChild(dom.firstChild($c('bilibili-player-recommend')[0])))
+    if (loaded) { return }
+
+    listContainer.classList.add('bp-list-container')
+    listContainer.style.display = 'block'
     listContainer.innerHTML = ''
     let id = pageUrlReg.exec(document.URL)[2]
     //Remove current breadcrumbs
@@ -133,7 +144,7 @@ function loadList() {
             type: 'a',
             class: `bp-list-item${isActive ? ' active' : ''}`,
             prop: [
-                ['href', `https://www.bilibili.com/video/av${vid.av}/?bpid=${pageUrlReg.exec(document.URL)[2]}`]
+                ['href', `https://www.bilibili.com/video/av${vid.av}/?bpid=${list.id}`]
             ]
         })
         util.append(a, util.create({
@@ -149,16 +160,14 @@ function loadList() {
         util.append(listContainer, a, false)
     }
 
+    nextVideoIndex = index === list.vids.length - 1 ? 0 : index + 1
     let containerHeight = parseInt(/^(\d+)px$/.exec(util.styleValue('height', listContainer.parentNode)))
-    console.log(util.styleValue('height', listContainer.parentNode))
-    listContainer.style.top = `-${(index - 2.5) * 32 + (index / list.vids.length) * containerHeight * 0.5}px`
+    listContainer.scrollTop = `-${(index - 2.5) * 32 + (index / list.vids.length) * containerHeight * 0.5}px`
+
+    loaded = true
 }
 
 function next() {
-    let n = dom.nodeAfter($c('bp-list-item active')[0])
-    if (n) {
-        window.location = n.href
-    } else {
-        window.location = $c('bp-list-item')[0].href
-    }
+    var av = list.vids[nextVideoIndex].av
+    window.location = `https://www.bilibili.com/video/av${av}/?bpid=${list.id}`
 }
