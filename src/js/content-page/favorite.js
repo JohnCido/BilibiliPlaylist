@@ -176,7 +176,7 @@ function save(callback, override = false) {
         //uid
         pageUrlReg.exec(document.URL)[1],
         //isPersonal
-        dom.firstChild($c('uname')[0]).innerHTML === $('h-name').innerHTML,
+        $c('space-theme-trigger icon')[0].style.display !== 'none',
         //isPrivate
         $c('fav-meta')[0].getElementsByClassName('type')[0].innerHTML === '私有'
     )

@@ -9,7 +9,7 @@
     "start": "cross-env NODE_ENV=develop webpack -w",
     "production": "cross-env NODE_ENV=production webpack",
     "archive": "node archive.js",
-    "distributeUnix": "npm run production && cd production; zip -r -X upload.zip * && npm run archive"
+    "distributeUnix": "rm -rf production && npm run production && cd production; zip -r -X upload.zip * && npm run archive"
   },
   "keywords": [
     "chrome",
@@ -39,7 +39,6 @@
   },
   "dependencies": {
     "async": "^2.5.0",
-    "lodash": "^4.17.4",
     "material-design-icons": "^3.0.1"
   }
 }
