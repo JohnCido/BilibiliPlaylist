@@ -181,14 +181,14 @@ function save(callback, override = false) {
         $c('fav-meta')[0].getElementsByClassName('type')[0].innerHTML === '私有'
     )
     //Reset page
-    util.fireEvent('click', $c('sp-pager-item')[0])
+    util.fireEvent('click', $c('be-pager-item')[0])
     util.fireEvent(
         'click',
-        Array.from($c('sort-item')).find(item => dom.firstChild(item).innerHTML === '全部分区')
+        Array.from($c('be-dropdown-item')).find(item => dom.firstChild(item).innerHTML === '全部分区')
     )
     util.fireEvent(
         'click',
-        Array.from($c('action-item')).find(item => item.innerHTML === ' 最近收藏 ')
+        Array.from($c('be-dropdown-item')).find(item => item.innerHTML === '最近收藏')
     )
 
     setTimeout(() => {
@@ -206,7 +206,7 @@ function save(callback, override = false) {
                 }
                 if (count > 0) {
                     //Move to next page
-                    util.fireEvent('click', dom.nodeAfter($c('sp-pager-item sp-pager-item-active')[0]))
+                    util.fireEvent('click', dom.nodeAfter($c('be-pager-item be-pager-item-active')[0]))
                     util.intervalTest(
                         () => !$c('small-item')[0].classList.contains('bp-fetched'),
                         () => {
@@ -225,7 +225,7 @@ function save(callback, override = false) {
                     return
                 }
                 //Back to page one
-                util.fireEvent('click', $c('sp-pager-item')[0])
+                util.fireEvent('click', $c('be-pager-item')[0])
 
                 //console.log(list)
                 chrome.storage.local.set({ [list.id]: list }, () => { })
@@ -295,7 +295,7 @@ function saveAll() {
     }, delay)
 
     function hrefOf(item) {
-        return item.getElementsByClassName('text v-link-active')[0].href
+        return item.getElementsByClassName('text router-link-active')[0].href
     }
 }
 
