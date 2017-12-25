@@ -2,7 +2,9 @@ require('../../css/favorite.less')
 import util from '../util'
 import dom from '../domNode'
 
-import whilst from 'async/whilst';
+import whilst from 'async/whilst'
+
+import Raven from 'raven-js'
 
 //If extension is initialized on this page
 var initialized = false
@@ -27,20 +29,27 @@ function $c(c) {
 }
 
 //Respond to page url change
-window.addEventListener('hashchange', () => {
-    setTimeout(function() {
-        validate()
-    }, 200);
-})
+// window.addEventListener('hashchange', () => {
+//     setTimeout(function() {
+//         validate()
+//     }, 200);
+// })
 window.onload = () => {
+    Raven.config('https://07112646a4334707b6a9a2477c43a195@sentry.io/263709', {
+        whitelistUrls: [pageUrlReg]
+    }).install()
     setTimeout(() => {
-        validate()
+        Raven.context(() => {
+            validate()
+        })
     }, 1500)
     for (let btn of Array.from($c('n-btn'))) {
         btn.addEventListener('click', () => {
             console.log('click n btn')
             setTimeout(function() {
-                validate()
+                Raven.context(() => {
+                    validate()
+                })
             }, 200);
         })
     }
@@ -89,14 +98,14 @@ function init() {
             class: 'material-icons bp-button',
             inner: 'play_arrow',
             prop: [['title', '按列表播放这个收藏夹']],
-            event: [['onclick', play]]
+            event: [[ 'onclick', () => { Raven.context(() => { play() }) } ]]
         }))
         buttonSave = util.append(listContainer, util.create({
             type: 'i',
             class: 'material-icons bp-button',
             inner: 'file_download',
             prop: [['title', '刷新这个收藏夹的本地缓存']],
-            event: [['onclick', save]]
+            event: [['onclick', () => { Raven.context(() => { save() }) } ]]
         }), false, true)
     }
 

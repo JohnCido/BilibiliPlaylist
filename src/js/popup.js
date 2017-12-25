@@ -9,9 +9,7 @@ window.onload = () => {
     load()
     
     document.getElementById('clear').onclick = () => {
-        chrome.storage.local.clear(() => {
-            
-        })
+        chrome.storage.local.clear(() => { })
         load()
     }
 }

@@ -2,6 +2,8 @@ require('../../css/video.less')
 import util from '../util'
 import dom from '../domNode'
 
+import Raven from 'raven-js'
+
 var initialized = false
 var loaded = false
 const pageUrlReg = /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)\/\?bpid=(\d+)$/
@@ -21,13 +23,16 @@ function $c(c) {
 }
 
 //Respond to page url change
-window.addEventListener('hashchange', () => {
-    setTimeout(function() {
-        validate()
-    }, 250);
-})
+// window.addEventListener('hashchange', () => {
+//     setTimeout(function() {
+//         validate()
+//     }, 250);
+// })
 window.onload = function () {
-    validate()
+    Raven.config('https://07112646a4334707b6a9a2477c43a195@sentry.io/263709').install();
+    Raven.context(() => {
+        validate()
+    })
 }
 
 //Validate page url, check if it's a video page with bpid parameter
