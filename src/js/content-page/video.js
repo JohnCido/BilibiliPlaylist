@@ -148,7 +148,7 @@ function loadList() {
         let a = util.create({
             type: 'a',
             class: `bp-list-item${isActive ? ' active' : ''}`,
-            data: [['index', i]],
+            data: [['index', i + 1]],
             prop: [
                 ['href', `https://www.bilibili.com/video/av${vid.av}/?bpid=${list.id}`]
             ]
