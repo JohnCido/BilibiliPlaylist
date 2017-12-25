@@ -162,7 +162,13 @@ function loadList() {
 
     nextVideoIndex = index === list.vids.length - 1 ? 0 : index + 1
     let containerHeight = parseInt(/^(\d+)px$/.exec(util.styleValue('height', listContainer.parentNode)))
-    listContainer.scrollTop = `-${(index - 2.5) * 32 + (index / list.vids.length) * containerHeight * 0.5}px`
+    //Update scroll position inside list
+    let contentH = list.vids.length * 32
+    let ratio = index / list.vids.length
+    let top = contentH * ratio + ratio * 2.75 * 32
+    setTimeout(() => {
+        listContainer.scrollTop = Math.round(top)
+    }, 200)
 
     loaded = true
 }
