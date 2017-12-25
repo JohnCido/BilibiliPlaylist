@@ -136,13 +136,14 @@ function loadList() {
     //Load video list
     var index = 0
     var lock = false
-    for (let vid of list.vids) {
+    for (let [i, vid] of list.vids.entries()) {
         let isActive = pageUrlReg.exec(document.URL)[1] === vid.av
         if (!isActive && !lock) { index++ }
         else { lock = true }
         let a = util.create({
             type: 'a',
             class: `bp-list-item${isActive ? ' active' : ''}`,
+            data: [['index', i]],
             prop: [
                 ['href', `https://www.bilibili.com/video/av${vid.av}/?bpid=${list.id}`]
             ]
@@ -168,7 +169,7 @@ function loadList() {
     let top = contentH * ratio + ratio * 2.75 * 32
     setTimeout(() => {
         listContainer.scrollTop = Math.round(top)
-    }, 200)
+    }, 500)
 
     loaded = true
 }
