@@ -6,7 +6,7 @@ import whilst from 'async/whilst';
 
 //If extension is initialized on this page
 var initialized = false
-const pageUrlReg = /^(?:http|https):\/\/space\.bilibili\.com\/(\d+)\/.*favlist\?fid=(\d+)$/
+const pageUrlReg = /^(?:http|https):\/\/space\.bilibili\.com\/(\d+)\/.*favlist(?:|\?fid=(\d+))$/
 const videoUrlReg = /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)$/
 
 //Buttons
@@ -32,10 +32,18 @@ window.addEventListener('hashchange', () => {
         validate()
     }, 200);
 })
-window.onload = function () {
+window.onload = () => {
     setTimeout(() => {
         validate()
     }, 1500)
+    for (let btn of Array.from($c('n-btn'))) {
+        btn.addEventListener('click', () => {
+            console.log('click n btn')
+            setTimeout(function() {
+                validate()
+            }, 200);
+        })
+    }
 }
 
 function favListId() {
@@ -93,20 +101,20 @@ function init() {
     }
 
     //All lists
-    if (!$('bp-save-all')) {
-        let navTitle = $c('nav-container fav-container')[0].getElementsByClassName('nav-title')[0]
-        util.append(navTitle, util.create({
-            type: 'span',
-            id: 'bp-save-all',
-            class: 'icon-add material-icons bp-button',
-            inner: 'cloud_download',
-            prop: [
-                ['title', '缓存所有收藏夹列表'],
-                ['style', 'right:34px']
-            ],
-            event: [['onclick', saveAll]]
-        }))
-    }
+    // if (!$('bp-save-all')) {
+    //     let navTitle = $c('nav-container fav-container')[0].getElementsByClassName('nav-title')[0]
+    //     util.append(navTitle, util.create({
+    //         type: 'span',
+    //         id: 'bp-save-all',
+    //         class: 'icon-add material-icons bp-button',
+    //         inner: 'cloud_download',
+    //         prop: [
+    //             ['title', '缓存所有收藏夹列表'],
+    //             ['style', 'right:34px']
+    //         ],
+    //         event: [['onclick', saveAll]]
+    //     }))
+    // }
 
     if (initialized) { return }
     util.AddSheetFile(`${chrome.extension.getURL('css/')}favorite.css`)
@@ -155,7 +163,9 @@ function save(callback, override = false) {
     let isChained = callback && typeof(callback) === 'function'
 
     const delay = 300
-    const total = parseInt(favCount.innerHTML)
+    const total = parseInt($c('fav-item cur')[0].getElementsByClassName('num')[0].innerHTML)
+    //console.log(total)
+    var avList = []
     var count = total
     const isLongList = count > 60
     if (isLongList) { showOverlay() }
@@ -199,7 +209,14 @@ function save(callback, override = false) {
                 for (let item of array) {
                     //Get video info
                     let vid = videoMiner(item)
-                    if (vid !== undefined) { list.vids.push(vid) }
+                    if (vid === undefined) {
+                        count--
+                        continue
+                    }
+                    let av = vid.av
+                    if (avList.indexOf(av) !== -1) continue
+                    avList.push(av)
+                    list.vids.push(vid)
                     //Count down
                     count--
                     if (!isChained || override) { updateProgress(1 - count / total) }
@@ -227,6 +244,7 @@ function save(callback, override = false) {
                 //Back to page one
                 util.fireEvent('click', $c('be-pager-item')[0])
 
+                //console.log(avList)
                 //console.log(list)
                 chrome.storage.local.set({ [list.id]: list }, () => { })
                 //db.saveList(list)
