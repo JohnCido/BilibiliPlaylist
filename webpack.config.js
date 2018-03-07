@@ -9,6 +9,7 @@ const isDevelopMode = process.env.NODE_ENV === 'develop'
 const directory = isDevelopMode ? 'develop' : 'production'
 
 module.exports = {
+    mode: isDevelopMode ? 'development' : 'production',
     devtool: isDevelopMode ? 'inline-source-map' : 'nosources-source-map',
     entry: {
         main: path.resolve(__dirname, 'src/js/main.js'),
@@ -22,7 +23,7 @@ module.exports = {
     },
 
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
@@ -66,7 +67,13 @@ module.exports = {
             debug: 'warning'
         }),
         new ExtractTextPlugin({filename: 'css/[name].css', disable: false, allChunks: true})
-    ]
+    ],
+
+    optimization: {
+        splitChunks: {
+            name: 'common'
+        }
+    }
 }
 
 if (!isDevelopMode) {
