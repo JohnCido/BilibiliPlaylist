@@ -62,6 +62,9 @@ function init() {
         video.addEventListener('ended', next)
         video.play()
     })
+
+    //Scroll the page to show the player
+    window.scrollTo(0, 230)
     
     //Open recommend panel and change button text
     let listButton = $c('bilibili-player-filter-btn')[0]
