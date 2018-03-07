@@ -1,6 +1,6 @@
 # Bilibili Playlist - 哔哩列表
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/JohnCido/BilibiliPlaylist.svg)](https://greenkeeper.io/)
+[![Greenkeeper badge](https://badges.greenkeeper.io/JohnCido/BilibiliPlaylist.svg)](https://greenkeeper.io/) [![Build Status](https://travis-ci.org/JohnCido/BilibiliPlaylist.svg?branch=master)](https://travis-ci.org/JohnCido/BilibiliPlaylist)
 
 This is the contribution guide for this extension. If you want to know how to use it, please refer to the [Store Page](https://chrome.google.com/webstore/detail/odahjnmjnhojohklinapjaokgaccfaba).
 
