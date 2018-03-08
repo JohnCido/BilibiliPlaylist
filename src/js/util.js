@@ -1,3 +1,5 @@
+import seededShuffle from 'seededshuffle'
+
 let util = module.exports = {
     //param: type id class prop data css inner event
     create: function (param) {
@@ -99,5 +101,10 @@ let util = module.exports = {
                 clearInterval(interval)
             }
         }, timeout)
+    },
+
+    shuffle: function(list, seed) {
+        if (seed === '0') return
+        seededShuffle.shuffle(list, seed)
     }
 }

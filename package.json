@@ -1,5 +1,5 @@
 {
-  "name": "extension-name",
+  "name": "bilibili-playlist",
   "version": "1.0.0",
   "description": "",
   "main": "",
@@ -15,7 +15,7 @@
     "chrome",
     "extension"
   ],
-  "author": "creator",
+  "author": "CIL",
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -42,6 +42,9 @@
   "dependencies": {
     "async": "^2.6.0",
     "material-design-icons": "^3.0.1",
-    "raven-js": "^3.23.1"
+    "md5": "^2.2.1",
+    "randomstring": "^1.1.5",
+    "raven-js": "^3.23.1",
+    "seededshuffle": "^0.2.0"
   }
 }

@@ -6,9 +6,10 @@ import Raven from 'raven-js'
 
 var initialized = false
 var loaded = false
-const pageUrlReg = /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)\/\?bpid=(\d+)$/
+const pageUrlReg = /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)\/\?bpid=(\d+)&seed=(.+)$/
 
 var list
+var seed
 var listContainer
 var infoBar
 
@@ -40,9 +41,11 @@ function validate() {
     let url = document.URL
     if (pageUrlReg.test(url)) {
         let id = pageUrlReg.exec(document.URL)[2]
+        seed = pageUrlReg.exec(document.URL)[3]
         chrome.storage.local.get(id, (obj) => {
             if (Object.keys(obj).length === 0) { return }
             list = obj[id]
+            util.shuffle(list.vids, seed)
             init()
         })
     }

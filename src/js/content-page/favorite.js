@@ -3,6 +3,7 @@ import util from '../util'
 import dom from '../domNode'
 
 import whilst from 'async/whilst'
+import randomString from 'randomstring'
 
 import Raven from 'raven-js'
 
@@ -100,6 +101,13 @@ function init() {
             prop: [['title', '按列表播放这个收藏夹']],
             event: [[ 'onclick', () => { Raven.context(() => { play() }) } ]]
         }))
+        util.append(listContainer, util.create({
+            type: 'i',
+            class: 'material-icons bp-button',
+            inner: 'shuffle',
+            prop: [['title', '随机播放这个收藏夹']],
+            event: [[ 'onclick', () => { Raven.context(() => { shuffle() }) } ]]
+        }))
         buttonSave = util.append(listContainer, util.create({
             type: 'i',
             class: 'material-icons bp-button',
@@ -141,25 +149,41 @@ function play() {
     //         window.open(`https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${list.id}`)
     //     }, true)
     // }
-    open(favListId(), success => {
+    open(favListId(), false, success => {
         if (success) { return }
         save(() => {
-            open(favListId())
+            open(favListId(), false)
         }, true)
     })
 }
 
-function open(id, callback) {
+function shuffle() {
+    open(favListId(), true, success => {
+        if (success) { return }
+        save(() => {
+            open(favListId(), true)
+        }, true)
+    })
+}
+
+function open(id, shuffle, callback) {
     chrome.storage.local.get(id, (obj) => {
-        let list = obj[id]
+        var list = obj[id]
         if (list === undefined || list === null) {
             //alert('请求的列表不存在')
             callback(false)
             return
         }
-
-        let url = `https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}`
+        var url
+        if (shuffle) {
+            let seed = randomString.generate(5)
+            util.shuffle(list.vids, seed)
+            url = `https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}&seed=${seed}`
+        } else {
+            url = `https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}&seed=0}`
+        }
         window.open(url)
+
         if (callback) callback(true)
     })
 }
