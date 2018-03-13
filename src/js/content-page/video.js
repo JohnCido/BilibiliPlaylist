@@ -156,7 +156,7 @@ function loadList() {
             class: `bp-list-item${isActive ? ' active' : ''}`,
             data: [['index', i + 1]],
             prop: [
-                ['href', `https://www.bilibili.com/video/av${vid.av}/?bpid=${list.id}`]
+                ['href', `https://www.bilibili.com/video/av${vid.av}/?bpid=${list.id}&seed=${seed}`]
             ]
         })
         util.append(a, util.create({
@@ -187,5 +187,5 @@ function loadList() {
 
 function next() {
     var av = list.vids[nextVideoIndex].av
-    window.location = `https://www.bilibili.com/video/av${av}/?bpid=${list.id}`
+    window.location = `https://www.bilibili.com/video/av${av}/?bpid=${list.id}&seed=${seed}`
 }

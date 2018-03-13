@@ -180,7 +180,7 @@ function open(id, shuffle, callback) {
             util.shuffle(list.vids, seed)
             url = `https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}&seed=${seed}`
         } else {
-            url = `https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}&seed=0}`
+            url = `https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}&seed=0`
         }
         window.open(url)
 

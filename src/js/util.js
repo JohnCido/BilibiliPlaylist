@@ -73,7 +73,7 @@ let util = module.exports = {
     },
 
     //Simulate event on element
-    //https://stackoverflow.com/questions/2705583/how-to-simulate-a-click-with-javascript
+    //https://stackoverflow.com/questions/2705583
     fireEvent: function (etype, el){
         if (el.fireEvent) {
             el.fireEvent('on' + etype);
@@ -104,7 +104,7 @@ let util = module.exports = {
     },
 
     shuffle: function(list, seed) {
-        if (seed === '0') return
+        if (seed === '0' || seed === undefined) return
         seededShuffle.shuffle(list, seed)
     }
 }
