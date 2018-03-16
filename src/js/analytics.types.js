@@ -1,0 +1,11 @@
+export const EXT_INSTALL = 'EXT_INSTALL'
+export const EXT_UPDATE = 'EXT_UPDATE'
+
+export const PLAYLIST_CACHE = 'PLAYLIST_CACHE'
+export const PLAYLIST_UPDATE = 'PLAYLIST_UPDATE'
+export const PLAYLIST_DELETE = 'PLAYLIST_DELETE'
+
+export const PLAY_QUEUE = 'PLAY_QUEUE'
+export const PLAY_SHUFFLE = 'PLAY_SHUFFLE'
+export const PLAY_NEXT = 'PLAY_NEXT'
+export const PLAY_CHANGE = 'PLAY_CHANGE'
