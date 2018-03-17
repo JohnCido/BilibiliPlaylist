@@ -1,3 +1,8 @@
+import Amplitude from 'amplitude-js'
+import * as amplitudeTypes from './analytics.types'
+let amplitudeInstance = Amplitude.getInstance()
+amplitudeInstance.init(amplitudeTypes.API_KEY)
+
 require('../css/popup.less')
 import util from './util'
 import dom from './domNode'
@@ -9,7 +14,11 @@ window.onload = () => {
     load()
     
     document.getElementById('clear').onclick = () => {
-        chrome.storage.local.clear(() => { })
+        chrome.storage.local.clear(() => {
+            amplitudeInstance.logEvent(amplitudeTypes.PLAYLIST_DELETE_ALL, {
+                from: 'popup'
+            })
+        })
         load()
     }
 }
@@ -19,6 +28,10 @@ function del(e) {
     let id = target.getAttribute('fid')
 
     chrome.storage.local.remove(id, () => {
+        amplitudeInstance.logEvent(amplitudeTypes.PLAYLIST_DELETE, {
+            from: 'popup'
+        })
+
         let item = target.parentNode
         item.parentNode.removeChild(item)
 
@@ -50,10 +63,14 @@ function load() {
                     type: 'a',
                     class: 'name',
                     inner: favlist.name,
-                    prop: [
-                        ['href', `https://www.bilibili.com/video/av${favlist.vids[0].av}/?bpid=${favlist.id}`],
-                        ['target', '_blank']
-                    ]
+                    event: [[
+                        'onclick', e => {
+                            amplitudeInstance.logEvent(amplitudeTypes.PLAY_QUEUE, {
+                                from: 'popup'
+                            })
+                            window.open(`https://www.bilibili.com/video/av${favlist.vids[0].av}/?bpid=${favlist.id}`)
+                        }
+                    ]]
                 }),
                 util.create({
                     type: 'button',

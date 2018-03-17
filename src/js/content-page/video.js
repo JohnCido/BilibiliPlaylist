@@ -2,7 +2,13 @@ require('../../css/video.less')
 import util from '../util'
 import dom from '../domNode'
 
+//Sentry
 import Raven from 'raven-js'
+//Amplitude
+import Amplitude from 'amplitude-js'
+import * as amplitudeTypes from '../analytics.types'
+let amplitudeInstance = Amplitude.getInstance()
+amplitudeInstance.init(amplitudeTypes.API_KEY)
 
 var initialized = false
 var loaded = false
@@ -185,7 +191,10 @@ function loadList() {
     loaded = true
 }
 
-function next() {
+function next(auto=true) {
+    amplitudeInstance.logEvent(amplitudeTypes.PLAY_NEXT, {
+        auto: auto
+    })
     var av = list.vids[nextVideoIndex].av
     window.location = `https://www.bilibili.com/video/av${av}/?bpid=${list.id}&seed=${seed}`
 }

@@ -5,14 +5,14 @@ import dom from '../domNode'
 import whilst from 'async/whilst'
 import randomString from 'randomstring'
 
-//Raven
+//Sentry
 import Raven from 'raven-js'
 
 //Amplitude
 import Amplitude from 'amplitude-js'
 import * as amplitudeTypes from '../analytics.types'
 let amplitudeInstance = Amplitude.getInstance()
-amplitudeInstance.init('f235621f75e162aa9ccc003c4ad00464')
+amplitudeInstance.init(amplitudeTypes.API_KEY)
 
 //If extension is initialized on this page
 var initialized = false
@@ -162,7 +162,9 @@ function play() {
             open(favListId(), false)
         }, true)
     })
-    amplitudeInstance.logEvent(amplitudeTypes.PLAY_QUEUE)
+    amplitudeInstance.logEvent(amplitudeTypes.PLAY_QUEUE, {
+        from: 'favorite'
+    })
 }
 
 function shuffle() {
@@ -172,7 +174,9 @@ function shuffle() {
             open(favListId(), true)
         }, true)
     })
-    amplitudeInstance.logEvent(amplitudeTypes.PLAY_SHUFFLE)
+    amplitudeInstance.logEvent(amplitudeTypes.PLAY_SHUFFLE, {
+        from: 'favorite'
+    })
 }
 
 function open(id, shuffle, callback) {

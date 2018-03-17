@@ -1,7 +1,7 @@
 import Amplitude from 'amplitude-js'
 import * as amplitudeTypes from './analytics.types'
 let amplitudeInstance = Amplitude.getInstance()
-amplitudeInstance.init('f235621f75e162aa9ccc003c4ad00464')
+amplitudeInstance.init(amplitudeTypes.API_KEY)
 
 chrome.runtime.onInstalled.addListener(details => {
     let reason = details.reason
@@ -27,3 +27,5 @@ chrome.runtime.onInstalled.addListener(details => {
         break
     }
 })
+
+let analyticsWorker = new SharedWorker('analytics.worker.js')
