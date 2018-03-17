@@ -5,7 +5,14 @@ import dom from '../domNode'
 import whilst from 'async/whilst'
 import randomString from 'randomstring'
 
+//Sentry
 import Raven from 'raven-js'
+
+//Amplitude
+import Amplitude from 'amplitude-js'
+import * as amplitudeTypes from '../analytics.types'
+let amplitudeInstance = Amplitude.getInstance()
+amplitudeInstance.init(amplitudeTypes.API_KEY)
 
 //If extension is initialized on this page
 var initialized = false
@@ -155,6 +162,9 @@ function play() {
             open(favListId(), false)
         }, true)
     })
+    amplitudeInstance.logEvent(amplitudeTypes.PLAY_QUEUE, {
+        from: 'favorite'
+    })
 }
 
 function shuffle() {
@@ -163,6 +173,9 @@ function shuffle() {
         save(() => {
             open(favListId(), true)
         }, true)
+    })
+    amplitudeInstance.logEvent(amplitudeTypes.PLAY_SHUFFLE, {
+        from: 'favorite'
     })
 }
 
@@ -279,7 +292,15 @@ function save(callback, override = false) {
 
                 //console.log(avList)
                 //console.log(list)
-                chrome.storage.local.set({ [list.id]: list }, () => { })
+                chrome.storage.local.get(list.id, o => {
+                    let l = o[list.id]
+                    if (l === undefined || l === null) {
+                        amplitudeInstance.logEvent(amplitudeTypes.PLAYLIST_CACHE)
+                    } else {
+                        amplitudeInstance.logEvent(amplitudeTypes.PLAYLIST_UPDATE)
+                    }
+                    chrome.storage.local.set({ [list.id]: list }, () => { })
+                })
                 //db.saveList(list)
                 //Finish fetch this favlist
                 if (!isChained || override) { hideOverlay() }
