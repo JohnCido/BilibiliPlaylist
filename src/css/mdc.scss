@@ -1,0 +1,11 @@
+$mdc-theme-primary: #00A1D6;
+$mdc-theme-accent: #F25D8E;
+$mdc-theme-background: #fff;
+
+@import "vue-mdc-adapter/dist/styles";
+
+.mdc-button {
+    &[icon] {
+        padding: 0;
+    }
+}

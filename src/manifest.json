@@ -39,7 +39,7 @@
 
     "browser_action": {
         "default_title": "__MSG_shortName__",
-        "default_popup": "./html/popup.html"
+        "default_popup": "./popup.html"
     },
     
     "permissions": [
@@ -50,7 +50,7 @@
     ],
 
     "web_accessible_resources": [
-        "css/*"
+        "/*"
     ],
     
     "homepage_url": "https://space.bilibili.com/1528379/#!/index"

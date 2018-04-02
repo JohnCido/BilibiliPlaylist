@@ -60,7 +60,7 @@ function validate() {
 function init() {
     if (initialized) { return }
     //Add CSS
-    util.AddSheetFile(`${chrome.extension.getURL('css/')}video.css`)
+    util.AddSheetFile(`${chrome.extension.getURL('/')}video.css`)
     
     //Start playing video
     util.intervalTest(() => {

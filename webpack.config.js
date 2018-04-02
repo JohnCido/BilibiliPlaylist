@@ -36,14 +36,34 @@ module.exports = {
                 test: /\.less$/,
                 use: ExtractTextPlugin.extract({
                     use: [
+                        'css-loader',
+                        'less-loader'
+                    ],
+                    fallback: 'style-loader'
+                })
+            }, {
+                test: /\.scss$/,
+                use: ExtractTextPlugin.extract({
+                    use: [
+                        'css-loader',
                         {
-                            loader: "css-loader"
-                        }, {
-                            loader: "less-loader"
+                            loader: 'sass-loader',
+                            options: {
+                                sourceMap: false,
+                                includePaths: [path.resolve(__dirname,'node_modules')]
+                            }
                         }
                     ],
-                    fallback: "style-loader"
+                    fallback: 'style-loader'
                 })
+            }, {
+                test: /\.pug$/,
+                exclude: /node_modules/,
+                use: 'pug-loader'
+            }, {
+                test: /\.vue$/,
+                exclude: /node_modules/,
+                use: 'vue-loader'
             }, {
                 test: /\.(png|jpg|jpeg|woff|woff2|eot|ttf|svg)$/,
                 use: 'url-loader'
@@ -52,13 +72,13 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['.js', '.es6', '.json', '.less']
+        extensions: ['.js', '.es6', '.json', '.less', '.vue', '.scss']
     },
 
     plugins: [
         new CopyFilesPlugin([
             { from: 'src/manifest.json', to: `./manifest.json` },
-            { from: 'src/html', to: `./html` },
+            { from: 'src/html', to: `./` },
             { from: 'src/_locales', to: `./_locales` },
             { from: 'src/img', to: `./img` },
         ], {
@@ -66,7 +86,7 @@ module.exports = {
             copyUnmodified: true,
             debug: 'warning'
         }),
-        new ExtractTextPlugin({filename: 'css/[name].css', disable: false, allChunks: true})
+        new ExtractTextPlugin({filename: '[name].css', disable: false, allChunks: true})
     ],
 
     optimization: {
@@ -96,7 +116,7 @@ if (!isDevelopMode) {
         }),
         new webpack.DefinePlugin({
             'process.env': {
-                NODE_ENV: "production"
+                NODE_ENV: 'production'
             }
         })
     )
