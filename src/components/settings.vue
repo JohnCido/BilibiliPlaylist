@@ -19,6 +19,10 @@ transition(name="page")
                 span(slot="secondary") {{ license.licenses }}
                 mdc-button(icon slot="end-detail" @click="open(license.licenseUrl)")
                     mdc-icon(icon="open_in_new")
+            footer
+                div(class="long")
+                mdc-body 你都翻到这儿了，要不要
+                mdc-button(@click="open('https://space.bilibili.com/1528379')") 关注我的账号
 </template>
 
 <script>
@@ -89,6 +93,7 @@ header {
     grid-row: 2;
     background: white;
     overflow: auto;
+    padding-bottom: 32px;
 }
 
 .license-item {
@@ -102,6 +107,19 @@ header {
         &::after {
             background-color: fade(@blue, 24);
         }
+    }
+}
+
+footer {
+    display: flex; flex-direction: column;
+    align-items: center; margin-top: 24px;
+
+    .long {
+        width: 72px; height: 8000px;
+        border-radius: 8px 36px 36px 36px;
+        box-shadow: inset 0 0 0 2px @blue;
+        background-image: url('../img/popup/face/2@2x.jpg');
+        background-size: contain; background-position: bottom center; background-repeat: no-repeat;
     }
 }
 

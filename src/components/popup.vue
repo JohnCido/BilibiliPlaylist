@@ -11,6 +11,10 @@ mdc-layout-app
     main
         section(class="lists")
             div(class="empty" v-if="lists.length === 0")
+                div(class="content")
+                    div(class="face")
+                    mdc-body 看什么看，没有列表
+                    mdc-button(@click="open('https://www.bilibili.com')") 打开 B 站
             mdc-list(v-for="(list, index) in lists" :key="index" dense two-line class="list")
                 mdc-list-item
                     span {{ list.name }}
@@ -97,7 +101,6 @@ export default {
         },
         itemAction(id) {
             let self = this
-            console.log(id)
             if (this.editing) {
                 //Delete
                 chrome.storage.local.remove(id, () => {
@@ -120,6 +123,9 @@ export default {
                 delete local.usage
                 self.lists = Object.values(local)
             })
+        },
+        open(url) {
+            window.open(url)
         }
     },
     created () {
@@ -185,6 +191,37 @@ main {
         width: 100%; height: 100%;
         position: absolute;
         z-index: 2;
+
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex; flex-direction: column;
+            align-items: center;
+
+            .face {
+                width: 72px; height: 72px;
+                border-radius: 8px 36px 36px 36px;
+                box-shadow: inset 0 0 0 2px @blue;
+                background-image: url('../img/popup/face/1@2x.jpg');
+                background-position: center; background-repeat: no-repeat; background-size: contain;
+            }
+
+            .mdc-body {
+                margin-top: 12px;
+            }
+
+            .mdc-button {
+                &::before {
+                    background-color: fade(@blue, 24);
+                }
+
+                &::after {
+                    background-color: fade(@blue, 24);
+                }
+            }
+        }
     }
 
     .list {

@@ -76,7 +76,7 @@ module.exports = {
             { from: 'src/manifest.json', to: `./manifest.json` },
             { from: 'src/html', to: `./` },
             { from: 'src/_locales', to: `./_locales` },
-            { from: 'src/img', to: `./img` },
+            { from: 'src/img/icons', to: `./img/icons` },
         ], {
             ignore: [ '.*' ],
             copyUnmodified: true,
