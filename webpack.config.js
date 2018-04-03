@@ -29,10 +29,6 @@ module.exports = {
                 exclude: /node_modules/,
                 use: 'babel-loader'
             }, {
-                test: /\.json$/,
-                exclude: /node_modules/,
-                use: 'json-loader'
-            }, {
                 test: /\.less$/,
                 use: ExtractTextPlugin.extract({
                     use: [

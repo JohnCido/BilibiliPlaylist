@@ -6,6 +6,14 @@ $mdc-theme-background: #fff;
 
 .mdc-button {
     &[icon] {
+        min-width: 24px;
+        width: 48px; height: 48px;
+        border-radius: 50%;
         padding: 0;
+
+        .mdc-icon {
+            width: 24px; height: 24px;
+            margin: 0;
+        }
     }
 }

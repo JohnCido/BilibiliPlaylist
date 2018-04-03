@@ -17,10 +17,12 @@ mdc-layout-app
                     span(slot="secondary") {{ `${list.priv ? '私人' : '公开'} · ${list.vids.length}个视频` }}
                     span(slot="end-detail")
                         mdc-button(icon shuffle v-if="!editing" @click="shuffle(`${list.id}`)")
-                            mdc-icon(class="material-icons") shuffle
+                            mdc-icon(icon="shuffle")
                         mdc-button(icon action @click="itemAction(`${list.id}`)")
-                            mdc-icon(class="material-icons") {{ editing ? 'delete' : 'play_arrow' }}
+                            mdc-icon(:icon="editing ? 'delete' : 'play_arrow'")
     
+    settings(ref="settings")
+
     mdc-dialog(ref="dialogClear" title="确定要删除所有列表？" accept="清除" @accept="clear" cancel="取消") 请注意此操作不可撤销
 </template>
 
@@ -32,6 +34,7 @@ amplitudeInstance.init(amplitudeTypes.API_KEY)
 
 import Settings from './settings'
 import randomString from 'randomstring'
+import series from 'async/series'
 import util from '../js/util'
 
 export default {
@@ -57,17 +60,34 @@ export default {
                 this.editing = false
             } else {
                 //Settings
+                this.$refs.settings.show()
             }
         },
         clear() {
             let self = this
-            chrome.storage.local.clear(() => {
-                amplitudeInstance.logEvent(amplitudeTypes.PLAYLIST_DELETE_ALL, {
-                    from: 'popup'
-                })
-                self.editing = false
-                self.lists = []
-            })
+            var usage
+
+            series([
+                cb => {
+                    chrome.storage.local.get('usage', obj => {
+                        usage = obj.usage
+                        cb()
+                    })
+                },
+                cb => {
+                    chrome.storage.local.clear(() => {
+                        amplitudeInstance.logEvent(amplitudeTypes.PLAYLIST_DELETE_ALL, {
+                            from: 'popup'
+                        })
+                        self.editing = false
+                        self.lists = []
+                        cb()
+                    })
+                },
+                cb => {
+                    chrome.storage.local.set({ usage: usage })
+                }
+            ])
         },
         shuffle(id) {
             amplitudeInstance.logEvent(amplitudeTypes.PLAY_SHUFFLE, {
@@ -97,6 +117,7 @@ export default {
         load() {
             let self = this
             chrome.storage.local.get(null, local => {
+                delete local.usage
                 self.lists = Object.values(local)
             })
         }
@@ -127,8 +148,28 @@ function open(id, shuffle) {
 <style lang="less" scoped>
 @import url('../css/basic.less');
 
+.mdc-layout-app {
+    z-index: 1;
+}
+
 .mdc-layout-app--toolbar-wrapper {
     min-height: 56px;
+
+    .mdc-toolbar-title {
+        color: white;
+    }
+
+    .mdc-toolbar-icon {
+        color: white;
+
+        &::before {
+            background-color: fade(white, 40);
+        }
+
+        &::after {
+            background-color: fade(white, 40);
+        }
+    }
 }
 
 main {
@@ -137,6 +178,7 @@ main {
 
 .lists {
     width: 100%; height: 100%;
+    position: relative;
     overflow-y: auto;
 
     .empty {
@@ -147,7 +189,7 @@ main {
 
     .list {
         .mdc-list-item {
-            padding-right: 12px;
+            padding-right: 4px;
         }
 
         &:hover {
@@ -155,24 +197,22 @@ main {
                 &[shuffle] {
                     opacity: 1;
                 }
+
+                &::before {
+                    background-color: fade(@blue, 24);
+                }
+
+                &::after {
+                    background-color: fade(@blue, 24);
+                }
             }
         }
 
         .mdc-button {
-            min-width: 24px;
-            width: 36px; height: 36px;
-            border-radius: 50%;
-
             &[shuffle] {
                 opacity: 0;
                 transition: opacity ease 0.07s;
-                margin-right: 12px;
             }
-        }
-
-        .mdc-icon {
-            width: 24px; height: 24px;
-            margin: 0;
         }
     }
 }
