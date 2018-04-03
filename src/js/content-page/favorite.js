@@ -159,7 +159,9 @@ function play() {
     open(favListId(), false, success => {
         if (success) { return }
         save(() => {
-            open(favListId(), false)
+            setTimeout(() => {
+                open(favListId(), false)
+            }, 200)
         }, true)
     })
     amplitudeInstance.logEvent(amplitudeTypes.PLAY_QUEUE, {
@@ -171,7 +173,9 @@ function shuffle() {
     open(favListId(), true, success => {
         if (success) { return }
         save(() => {
-            open(favListId(), true)
+            setTimeout(() => {
+                open(favListId(), true)
+            }, 200)
         }, true)
     })
     amplitudeInstance.logEvent(amplitudeTypes.PLAY_SHUFFLE, {
@@ -180,11 +184,10 @@ function shuffle() {
 }
 
 function open(id, shuffle, callback) {
-    chrome.storage.local.get(id, (obj) => {
+    chrome.storage.local.get(`${id}`, obj => {
         var list = obj[id]
         if (list === undefined || list === null) {
-            //alert('请求的列表不存在')
-            callback(false)
+            if (callback) callback(false)
             return
         }
         var url
