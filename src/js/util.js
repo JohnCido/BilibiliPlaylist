@@ -1,4 +1,5 @@
 import seededShuffle from 'seededshuffle'
+import randomString from 'randomstring'
 
 let util = module.exports = {
     //param: type id class prop data css inner event

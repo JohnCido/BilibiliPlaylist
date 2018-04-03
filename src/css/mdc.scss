@@ -1,0 +1,19 @@
+$mdc-theme-primary: #00A1D6;
+$mdc-theme-accent: #F25D8E;
+$mdc-theme-background: #fff;
+
+@import "vue-mdc-adapter/dist/styles";
+
+.mdc-button {
+    &[icon] {
+        min-width: 24px;
+        width: 48px; height: 48px;
+        border-radius: 50%;
+        padding: 0;
+
+        .mdc-icon {
+            width: 24px; height: 24px;
+            margin: 0;
+        }
+    }
+}

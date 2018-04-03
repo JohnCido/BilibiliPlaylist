@@ -141,7 +141,7 @@ function init() {
     // }
 
     if (initialized) { return }
-    util.AddSheetFile(`${chrome.extension.getURL('css/')}favorite.css`)
+    util.AddSheetFile(`${chrome.extension.getURL('/')}favorite.css`)
     initialized = true
 }
 

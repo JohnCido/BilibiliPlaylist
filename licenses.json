@@ -1,0 +1,68 @@
+{
+    "amplitude-js": {
+        "licenses": "MIT",
+        "repository": "https://github.com/amplitude/amplitude-javascript",
+        "licenseUrl": "https://github.com/amplitude/amplitude-javascript/raw/master/LICENSE",
+        "parents": "bilibili-playlist"
+    },
+    "async": {
+        "licenses": "MIT",
+        "repository": "https://github.com/caolan/async",
+        "licenseUrl": "https://github.com/caolan/async/raw/master/LICENSE",
+        "parents": "bilibili-playlist"
+    },
+    "compare-versions": {
+        "licenses": "MIT",
+        "repository": "https://github.com/omichelsen/compare-versions",
+        "licenseUrl": "https://github.com/omichelsen/compare-versions/raw/master/LICENSE",
+        "parents": "bilibili-playlist"
+    },
+    "material-components-web": {
+        "licenses": "Apache-2.0",
+        "repository": "https://github.com/material-components/material-components-web",
+        "licenseUrl": "https://github.com/material-components/material-components-web",
+        "parents": "bilibili-playlist"
+    },
+    "material-design-icons": {
+        "licenses": "Apache-2.0",
+        "repository": "https://github.com/google/material-design-icons",
+        "licenseUrl": "https://github.com/google/material-design-icons/raw/master/LICENSE",
+        "parents": "bilibili-playlist"
+    },
+    "md5": {
+        "licenses": "BSD-3-Clause",
+        "repository": "https://github.com/pvorb/node-md5",
+        "licenseUrl": "https://github.com/pvorb/node-md5/raw/master/LICENSE",
+        "parents": "bilibili-playlist"
+    },
+    "randomstring": {
+        "licenses": "MIT",
+        "repository": "https://github.com/klughammer/node-randomstring",
+        "licenseUrl": "https://github.com/klughammer/node-randomstring/raw/master/LICENSE",
+        "parents": "bilibili-playlist"
+    },
+    "raven-js": {
+        "licenses": "BSD-2-Clause",
+        "repository": "https://github.com/getsentry/raven-js",
+        "licenseUrl": "https://github.com/getsentry/raven-js/raw/master/LICENSE",
+        "parents": "bilibili-playlist"
+    },
+    "seededshuffle": {
+        "licenses": "unlicense",
+        "repository": "https://github.com/LouisT/SeededShuffle",
+        "licenseUrl": "http://unlicense.org/",
+        "parents": "bilibili-playlist"
+    },
+    "vue-mdc-adapter": {
+        "licenses": "MIT",
+        "repository": "https://github.com/stasson/vue-mdc-adapter",
+        "licenseUrl": "https://github.com/stasson/vue-mdc-adapter/raw/master/LICENSE",
+        "parents": "bilibili-playlist"
+    },
+    "vue": {
+        "licenses": "MIT",
+        "repository": "https://github.com/vuejs/vue",
+        "licenseUrl": "https://github.com/vuejs/vue/raw/master/LICENSE",
+        "parents": "bilibili-playlist"
+    }
+}
