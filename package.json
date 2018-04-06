@@ -8,8 +8,8 @@
     "update": "ncu -u",
     "start": "cross-env NODE_ENV=develop webpack -w",
     "production": "cross-env NODE_ENV=production webpack",
-    "archive": "rm -rf cache && node archive.js",
-    "distributeUnix": "rm -rf production && npm run production && cd production; zip -r -X upload.zip * && npm run archive",
+    "archive": "node archive.js",
+    "distributeUnix": "rm -rf cache && rm -rf production && npm run production && cd production; zip -r -X upload.zip * && npm run archive",
     "licensesJSON": "npm-license-crawler --onlyDirectDependencies --omitVersion --json ./licenses.json"
   },
   "keywords": [
