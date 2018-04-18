@@ -37,7 +37,7 @@
     "pug-loader": "^2.4.0",
     "sass-loader": "^6.0.7",
     "source-map-loader": "^0.2.3",
-    "style-loader": "^0.20.3",
+    "style-loader": "^0.21.0",
     "url-loader": "^1.0.1",
     "vue-loader": "^14.2.2",
     "vue-template-compiler": "^2.5.16",
