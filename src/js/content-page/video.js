@@ -69,7 +69,9 @@ function init() {
     }, () => {
         let video = dom.firstChild($c('bilibili-player-video')[0])
         video.addEventListener('ended', next)
-        video.play()
+        
+        video.setAttribute('preload', 'auto')
+        video.addEventListener('canplaythrough', () => video.play())
     })
 
     //Scroll the page to show the player
