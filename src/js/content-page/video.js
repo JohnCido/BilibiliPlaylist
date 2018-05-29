@@ -75,11 +75,12 @@ function init() {
     })
 
     //Scroll the page to show the player
-    window.scrollTo(0, 230)
+    window.scrollTo(0, 400)
     
     //Open recommend panel and change button text
     let listButton = $c('bilibili-player-filter-btn')[0]
-    listButton.getElementsByClassName('bpui-button-text')[0].innerHTML = '播放列表'
+    let listButtonLabel = listButton.firstChild.firstChild
+    listButtonLabel.innerHTML = '播放列表'
     util.fireEvent('click', listButton)
     //Load list into panel
     listContainer = $c('bilibili-player-recommend')[0]
