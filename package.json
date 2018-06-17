@@ -56,6 +56,6 @@
     "raven-js": "^3.24.0",
     "seededshuffle": "^0.2.0",
     "vue": "^2.5.16",
-    "vue-mdc-adapter": "^0.13.5"
+    "vue-mdc-adapter": "^0.14.0"
   }
 }
