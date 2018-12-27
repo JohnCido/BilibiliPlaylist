@@ -1,14 +1,15 @@
-import compareVersions from 'compare-versions'
+import { browser } from 'webextension-polyfill-ts'
+import * as compareVersions from 'compare-versions'
 
-import Amplitude from 'amplitude-js'
+import * as Amplitude from 'amplitude-js'
 import * as amplitudeTypes from './analytics.types'
 let amplitudeInstance = Amplitude.getInstance()
 amplitudeInstance.init(amplitudeTypes.API_KEY)
 
-chrome.runtime.onInstalled.addListener(details => {
+browser.runtime.onInstalled.addListener(details => {
     let reason = details.reason
     let previousVersion = details.previousVersion
-    let version = chrome.runtime.getManifest().version
+    let version = browser.runtime.getManifest().version
 
     switch (reason) {
         case 'install':
@@ -30,6 +31,6 @@ chrome.runtime.onInstalled.addListener(details => {
     }
         
     if (compareVersions(version, '1.1.10') > 0 && compareVersions(previousVersion || '0.0.0', '1.1.10') <= 0) {
-        chrome.storage.local.set({ 'usage': true })
+        browser.storage.local.set({ 'usage': true })
     }
 })

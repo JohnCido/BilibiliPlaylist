@@ -3,6 +3,7 @@ var webpack = require('webpack')
 var path = require('path')
 var CopyFilesPlugin = require('copy-webpack-plugin')
 var UglifyJsPlugin = require('webpack-uglify-js-plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const isDevelopMode = process.env.NODE_ENV === 'develop'
@@ -12,7 +13,7 @@ module.exports = {
     mode: isDevelopMode ? 'development' : 'production',
     devtool: isDevelopMode ? 'inline-source-map' : 'nosources-source-map',
     entry: {
-        main: path.resolve(__dirname, 'src/js/main.js'),
+        main: path.resolve(__dirname, 'src/js/main.ts'),
         favorite: path.resolve(__dirname, 'src/js/content-page/favorite.js'),
         video: path.resolve(__dirname, 'src/js/content-page/video.js'),
         popup: path.resolve(__dirname, 'src/js/popup.js')
@@ -28,6 +29,10 @@ module.exports = {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 use: 'babel-loader'
+            }, {
+                test: /\.ts$/,
+                exclude: /node_modules/,
+                use: 'ts-loader'
             }, {
                 test: /\.less$/,
                 use: ExtractTextPlugin.extract({
@@ -55,7 +60,7 @@ module.exports = {
             }, {
                 test: /\.pug$/,
                 exclude: /node_modules/,
-                use: 'pug-loader'
+                use: 'pug-plain-loader'
             }, {
                 test: /\.vue$/,
                 exclude: /node_modules/,
@@ -68,10 +73,11 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['.js', '.es6', '.json', '.less', '.vue', '.scss']
+        extensions: ['.js', '.ts', '.es6', '.json', '.less', '.vue', '.scss']
     },
 
     plugins: [
+        new VueLoaderPlugin(),
         new CopyFilesPlugin([
             { from: 'src/manifest.json', to: `./manifest.json` },
             { from: 'src/html', to: `./` },
