@@ -12,13 +12,13 @@ browser.runtime.onInstalled.addListener(details => {
     let version = browser.runtime.getManifest().version
 
     switch (reason) {
-        case 'install':
+    case 'install':
         amplitudeInstance.logEvent(amplitudeTypes.EXT_INSTALL, {
             version: version
         })
         break
 
-        case 'update':
+    case 'update':
         if (previousVersion === version) break
         amplitudeInstance.logEvent(amplitudeTypes.EXT_UPDATE, {
             previousVersion: previousVersion,
@@ -26,10 +26,10 @@ browser.runtime.onInstalled.addListener(details => {
         })
         break
 
-        default:
+    default:
         break
     }
-        
+
     if (compareVersions(version, '1.1.10') > 0 && compareVersions(previousVersion || '0.0.0', '1.1.10') <= 0) {
         browser.storage.local.set({ 'usage': true })
     }

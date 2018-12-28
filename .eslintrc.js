@@ -7,12 +7,13 @@ module.exports = {
         node: true
     },
     extends: 'standard',
-    parser: 'babel-eslint',
+    parser: 'typescript-eslint-parser',
     parserOptions: {
         sourceType: 'module'
     },
     plugins: [
-        'html'
+        'html',
+        'typescript'
     ],
     rules: {
         'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
