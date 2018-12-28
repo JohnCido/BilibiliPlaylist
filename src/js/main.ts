@@ -1,10 +1,14 @@
 import { browser } from 'webextension-polyfill-ts'
 import * as compareVersions from 'compare-versions'
 
-import * as Amplitude from 'amplitude-js'
-import * as amplitudeTypes from './analytics.types'
-let amplitudeInstance = Amplitude.getInstance()
-amplitudeInstance.init(amplitudeTypes.API_KEY)
+import * as amplitude from 'amplitude-js'
+import {
+    API_KEY,
+    EXT_INSTALL,
+    EXT_UPDATE
+} from './analytics.types'
+let amplitudeInstance = amplitude.getInstance()
+amplitudeInstance.init(API_KEY)
 
 browser.runtime.onInstalled.addListener(details => {
     let reason = details.reason
@@ -13,14 +17,14 @@ browser.runtime.onInstalled.addListener(details => {
 
     switch (reason) {
     case 'install':
-        amplitudeInstance.logEvent(amplitudeTypes.EXT_INSTALL, {
+        amplitudeInstance.logEvent(EXT_INSTALL, {
             version: version
         })
         break
 
     case 'update':
         if (previousVersion === version) break
-        amplitudeInstance.logEvent(amplitudeTypes.EXT_UPDATE, {
+        amplitudeInstance.logEvent(EXT_UPDATE, {
             previousVersion: previousVersion,
             updatedTo: version
         })
@@ -30,6 +34,7 @@ browser.runtime.onInstalled.addListener(details => {
         break
     }
 
+    // Add necessary usage setting in the local storage for v1.1.10 and up
     if (compareVersions(version, '1.1.10') > 0 && compareVersions(previousVersion || '0.0.0', '1.1.10') <= 0) {
         browser.storage.local.set({ 'usage': true })
     }
