@@ -1,8 +1,7 @@
-//var fs = require('fs')
 var webpack = require('webpack')
 var path = require('path')
 var CopyFilesPlugin = require('copy-webpack-plugin')
-var UglifyJsPlugin = require('webpack-uglify-js-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 
@@ -51,7 +50,7 @@ module.exports = {
                             loader: 'sass-loader',
                             options: {
                                 sourceMap: false,
-                                includePaths: [path.resolve(__dirname,'node_modules')]
+                                includePaths: [ path.resolve(__dirname, 'node_modules') ]
                             }
                         }
                     ],
@@ -79,47 +78,42 @@ module.exports = {
     plugins: [
         new VueLoaderPlugin(),
         new CopyFilesPlugin([
-            { from: 'src/manifest.json', to: `./manifest.json` },
-            { from: 'src/html', to: `./` },
-            { from: 'src/_locales', to: `./_locales` },
-            { from: 'src/img/icons', to: `./img/icons` },
+            { from: 'src/manifest.json', to: './manifest.json' },
+            { from: 'src/html', to: './' },
+            { from: 'src/_locales', to: './_locales' },
+            { from: 'src/img/icons', to: './img/icons' }
         ], {
             ignore: [ '.*' ],
             copyUnmodified: true,
             debug: 'warning'
         }),
-        new ExtractTextPlugin({filename: '[name].css', disable: false, allChunks: true})
+        new ExtractTextPlugin({ filename: '[name].css', disable: false, allChunks: true }),
+        ...(isDevelopMode ? [] : [
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: JSON.stringify('production')
+                }
+            })
+        ])
     ],
 
     optimization: {
         splitChunks: {
             name: 'common'
-        }
-    }
-}
-
-if (!isDevelopMode) {
-    module.exports.plugins.push(
-        new UglifyJsPlugin({
-            cacheFolder: path.resolve(__dirname, 'cache/uglify'),
-            debug: false,
-            minimize: true,
-            sourceMap: true,
-            output: {
-                comments: false
-            },
-            compressor: {
-                warnings: false
-            },
-            output: {
-                ascii_only: true,
-                beautify: false
-            }
-        }),
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('production')
-            }
+        },
+        ...(isDevelopMode ? {} : {
+            minimizer: [
+                new TerserPlugin({
+                    cache: true,
+                    parallel: true,
+                    terserOptions: {
+                        ecma: 6,
+                        output: {
+                            ascii_only: true
+                        }
+                    }
+                })
+            ]
         })
-    )
+    }
 }
