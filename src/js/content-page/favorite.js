@@ -1,49 +1,55 @@
-require('../../css/favorite.less')
+import { browser } from 'webextension-polyfill-ts'
+
 import util from '../util'
 import dom from '../domNode'
 
 import whilst from 'async/whilst'
 import randomString from 'randomstring'
 
-//Sentry
+import videoMiner from '../model/video.miner'
+import listModel from '../model/list.model'
+
+//  Sentry
 import Raven from 'raven-js'
 
-//Amplitude
+//  Amplitude
 import Amplitude from 'amplitude-js'
 import * as amplitudeTypes from '../analytics.types'
 let amplitudeInstance = Amplitude.getInstance()
 amplitudeInstance.init(amplitudeTypes.API_KEY)
 
-//If extension is initialized on this page
+require('../../css/favorite.less')
+
+//  If extension is initialized on this page
 var initialized = false
 const pageUrlReg = /^(?:http|https):\/\/space\.bilibili\.com\/(\d+)\/.*favlist(?:|\?fid=(\d+))$/
-const videoUrlReg = /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)$/
+// const videoUrlReg = /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)$/
 
-//Buttons
+//  Buttons
 var buttonSave
 
-//Favlist objects
-var allList
+//  Favlist objects
+// var allList
 var favTitle
-var favCount
-var listPager
+// var favCount
+// var listPager
 
-function $(id) {
+function $ (id) {
     return document.getElementById(id)
 }
 
-function $c(c) {
+function $c (c) {
     return document.getElementsByClassName(c)
 }
 
-//Respond to page url change
+// Respond to page url change
 // window.addEventListener('hashchange', () => {
-//     setTimeout(function() {
+//     setTimeout(function () {
 //         validate()
 //     }, 200);
 // })
 window.onload = () => {
-    Raven.config('https://07112646a4334707b6a9a2477c43a195@sentry.io/263709', {
+    Raven.config('https:// 07112646a4334707b6a9a2477c43a195@sentry.io/263709', {
         whitelistUrls: [pageUrlReg]
     }).install()
     setTimeout(() => {
@@ -54,36 +60,36 @@ window.onload = () => {
     for (let btn of Array.from($c('n-btn'))) {
         btn.addEventListener('click', () => {
             console.log('click n btn')
-            setTimeout(function() {
+            setTimeout(function () {
                 Raven.context(() => {
                     validate()
                 })
-            }, 200);
+            }, 200)
         })
     }
 }
 
-function favListId() {
+function favListId () {
     return pageUrlReg.exec(document.URL)[2]
 }
 
-//Validate page url, check if it's a favlist page
-function validate() {
+// Validate page url, check if it's a favlist page
+function validate () {
     let url = document.URL
     if (pageUrlReg.test(url)) {
-        //console.log(`url ${url} got a match`)
+        // console.log(`url ${url} got a match`)
         init()
     }
 }
 
-//And play as list button and related CSS
-function init() {
-    allList = $('fav-list-container')
+// And play as list button and related CSS
+function init () {
+    // allList = $('fav-list-container')
     favTitle = $c('item cur')[0]
-    favCount = $c('fav-meta')[0].getElementsByClassName('num')[0]
-    listPager = $c('sp-pager')[0]
+    // favCount = $c('fav-meta')[0].getElementsByClassName('num')[0]
+    // listPager = $c('sp-pager')[0]
 
-    //Overlay
+    // Overlay
     if (!$('bp-overlay')) {
         overlay = util.append(document.body, util.create({
             type: 'div',
@@ -95,7 +101,7 @@ function init() {
         }), true, true)
     }
 
-    //List container
+    // List container
     if (!$('bp-list-container')) {
         let listContainer = util.append($c('fav-main')[0], util.create({
             type: 'div',
@@ -120,42 +126,17 @@ function init() {
             class: 'material-icons bp-button',
             inner: 'file_download',
             prop: [['title', '刷新这个收藏夹的本地缓存']],
-            event: [['onclick', () => { Raven.context(() => { save() }) } ]]
+            event: [[ 'onclick', () => Raven.context(() => { save() }) ]]
         }), false, true)
     }
 
-    //All lists
-    // if (!$('bp-save-all')) {
-    //     let navTitle = $c('nav-container fav-container')[0].getElementsByClassName('nav-title')[0]
-    //     util.append(navTitle, util.create({
-    //         type: 'span',
-    //         id: 'bp-save-all',
-    //         class: 'icon-add material-icons bp-button',
-    //         inner: 'cloud_download',
-    //         prop: [
-    //             ['title', '缓存所有收藏夹列表'],
-    //             ['style', 'right:34px']
-    //         ],
-    //         event: [['onclick', saveAll]]
-    //     }))
-    // }
-
     if (initialized) { return }
-    util.AddSheetFile(`${chrome.extension.getURL('/')}favorite.css`)
+    util.AddSheetFile(`${browser.extension.getURL('/')}favorite.css`)
     initialized = true
 }
 
-//Play as list
-function play() {
-    // var list = db.getList(favListId())
-    // if (list !== undefined) {
-    //     window.open(`https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${list.id}`)
-    // } else {
-    //     save(() => {
-    //         list = db.getList(favListId())
-    //         window.open(`https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${list.id}`)
-    //     }, true)
-    // }
+// Play as list
+function play () {
     open(favListId(), false, success => {
         if (success) { return }
         save(() => {
@@ -169,7 +150,7 @@ function play() {
     })
 }
 
-function shuffle() {
+function shuffle () {
     open(favListId(), true, success => {
         if (success) { return }
         save(() => {
@@ -183,8 +164,8 @@ function shuffle() {
     })
 }
 
-function open(id, shuffle, callback) {
-    chrome.storage.local.get(`${id}`, obj => {
+function open (id, shuffle, callback) {
+    browser.storage.local.get(`${id}`, obj => {
         var list = obj[id]
         if (list === undefined || list === null) {
             if (callback) callback(false)
@@ -194,9 +175,9 @@ function open(id, shuffle, callback) {
         if (shuffle) {
             let seed = randomString.generate(5)
             util.shuffle(list.vids, seed)
-            url = `https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}&seed=${seed}`
+            url = `https:// www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}&seed=${seed}`
         } else {
-            url = `https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}&seed=0`
+            url = `https:// www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}&seed=0`
         }
         window.open(url)
 
@@ -204,42 +185,40 @@ function open(id, shuffle, callback) {
     })
 }
 
-//Save current list
-import videoMiner from '../model/video.miner'
-import listModel from '../model/list.model'
+// Save current list
 
-function save(callback, override = false) {
-    let isChained = callback && typeof(callback) === 'function'
+function save (callback, override = false) {
+    let isChained = callback && typeof callback === 'function'
 
     const delay = 300
     const total = parseInt($c('fav-item cur')[0].getElementsByClassName('num')[0].innerHTML)
-    //console.log(total)
+    // console.log(total)
     var avList = []
     var count = total
     const isLongList = count > 60
     if (isLongList) { showOverlay() }
 
     if (count === 0) {
-        //Empty favlist
-        chrome.storage.local.remove(favListId(), () => {})
+        // Empty favlist
+        browser.storage.local.remove(favListId(), () => {})
         return
     }
 
     let list = listModel(
-        //id
+        // id
         favListId(),
-        //name
+        // name
         favTitle.innerHTML,
-        //owner
+        // owner
         $('h-name').innerHTML,
-        //uid
+        // uid
         pageUrlReg.exec(document.URL)[1],
-        //isPersonal
+        // isPersonal
         $c('space-theme-trigger icon')[0].style.display !== 'none',
-        //isPrivate
+        // isPrivate
         $c('fav-meta')[0].getElementsByClassName('type')[0].innerHTML === '私有'
     )
-    //Reset page
+    // Reset page
     util.fireEvent('click', $c('be-pager-item')[0])
     util.fireEvent(
         'click',
@@ -256,7 +235,7 @@ function save(callback, override = false) {
             (cb) => {
                 let array = Array.from($c('small-item'))
                 for (let item of array) {
-                    //Get video info
+                    // Get video info
                     let vid = videoMiner(item)
                     if (vid === undefined) {
                         count--
@@ -266,12 +245,12 @@ function save(callback, override = false) {
                     if (avList.indexOf(av) !== -1) continue
                     avList.push(av)
                     list.vids.push(vid)
-                    //Count down
+                    // Count down
                     count--
                     if (!isChained || override) { updateProgress(1 - count / total) }
                 }
                 if (count > 0) {
-                    //Move to next page
+                    // Move to next page
                     util.fireEvent('click', dom.nodeAfter($c('be-pager-item be-pager-item-active')[0]))
                     util.intervalTest(
                         () => !$c('small-item')[0].classList.contains('bp-fetched'),
@@ -281,7 +260,7 @@ function save(callback, override = false) {
                         10
                     )
                 } else {
-                    //Finish fetching
+                    // Finish fetching
                     cb(null, count)
                 }
             },
@@ -290,22 +269,19 @@ function save(callback, override = false) {
                     alert(err)
                     return
                 }
-                //Back to page one
+                // Back to page one
                 util.fireEvent('click', $c('be-pager-item')[0])
 
-                //console.log(avList)
-                //console.log(list)
-                chrome.storage.local.get(list.id, o => {
+                browser.storage.local.get(list.id, o => {
                     let l = o[list.id]
                     if (l === undefined || l === null) {
                         amplitudeInstance.logEvent(amplitudeTypes.PLAYLIST_CACHE)
                     } else {
                         amplitudeInstance.logEvent(amplitudeTypes.PLAYLIST_UPDATE)
                     }
-                    chrome.storage.local.set({ [list.id]: list }, () => { })
+                    browser.storage.local.set({ [list.id]: list }, () => { })
                 })
-                //db.saveList(list)
-                //Finish fetch this favlist
+                // Finish fetch this favlist
                 if (!isChained || override) { hideOverlay() }
 
                 if (isChained) {
@@ -313,86 +289,86 @@ function save(callback, override = false) {
                 }
                 if (!isLongList && !isChained && !override) {
                     buttonSave.classList.add('done')
-                    setTimeout(function() {
+                    setTimeout(function () {
                         buttonSave.classList.remove('done')
-                    }, 1200);
+                    }, 1200)
                 }
             }
         )
     }, delay)
 }
 
-//Save all favlist
-function saveAll() {
-    //Overlay
-    showOverlay()
+// Save all favlist
+// function saveAll () {
+//     // Overlay
+//     showOverlay()
 
-    const delay = 600
-    let list = $c('fav-list')[0]
-    const total = list.children.length
-    var count = total
-    window.location = hrefOf(dom.firstChild(list))
-    setTimeout(() => {
-        whilst(
-            () => count > 0,
-            (cb) => {
-                save(() => {
-                    count--
-                    updateProgress(1 - count / total)
+//     const delay = 600
+//     let list = $c('fav-list')[0]
+//     const total = list.children.length
+//     var count = total
+//     window.location = hrefOf(dom.firstChild(list))
+//     setTimeout(() => {
+//         whilst(
+//             () => count > 0,
+//             (cb) => {
+//                 save(() => {
+//                     count--
+//                     updateProgress(1 - count / total)
 
-                    if (count > 0) {
-                        //Move to next folder
-                        window.location = hrefOf(dom.nodeAfter($c('fav-item cur')[0]))
-                        setTimeout(() => {
-                            cb(null, count)
-                        }, delay)
-                    } else {
-                        //Finish favList
-                        cb(null, count)
-                    }
-                })
-            },
-            (err, n) => {
-                if (err) {
-                    alert(err)
-                    return
-                }
-                //Fetch default folder
-                window.location = hrefOf($c('fav-item default-fav')[0])
-                setTimeout(() => {
-                    save(() => {
-                        //All done
-                        hideOverlay()
-                    })
-                }, delay)
-            }
-        )
-    }, delay)
+//                     if (count > 0) {
+//                         // Move to next folder
+//                         window.location = hrefOf(dom.nodeAfter($c('fav-item cur')[0]))
+//                         setTimeout(() => {
+//                             cb(null, count)
+//                         }, delay)
+//                     } else {
+//                         // Finish favList
+//                         cb(null, count)
+//                     }
+//                 })
+//             },
+//             (err, n) => {
+//                 if (err) {
+//                     alert(err)
+//                     return
+//                 }
+//                 // Fetch default folder
+//                 window.location = hrefOf($c('fav-item default-fav')[0])
+//                 setTimeout(() => {
+//                     save(() => {
+//                         // All done
+//                         hideOverlay()
+//                     })
+//                 }, delay)
+//             }
+//         )
+//     }, delay)
 
-    function hrefOf(item) {
-        return item.getElementsByClassName('text router-link-active')[0].href
-    }
-}
+//     function hrefOf (item) {
+//         return item.getElementsByClassName('text router-link-active')[0].href
+//     }
+// }
 
-//Overlay and progress functions
+// Overlay and progress functions
 var overlay
 var progress
 
-function showOverlay() {
+function showOverlay () {
     document.body.style.overflow = 'hidden'
     overlay.style.display = 'block'
     overlay.style.opacity = 1
 }
 
-function hideOverlay() {
+function hideOverlay () {
     overlay.style.opacity = 0
-    setTimeout(function() {
+    setTimeout(function () {
         overlay.style.display = 'none'
         updateProgress(0)
         document.body.style.overflow = 'auto'
-    }, 250);
+    }, 250)
 }
 
-function updateProgress(p) {
+function updateProgress (p) {
     progress.style.width = `${p * 100}%`
 }

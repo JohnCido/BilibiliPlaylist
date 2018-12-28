@@ -1,7 +1,7 @@
 import videoModel from '../model/video.model'
 const videoUrlReg = /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)$/
 
-export default function(item) {
+export default function (item) {
     item.classList.add('bp-fetched')
 
     let cover = item.getElementsByClassName('cover')[0]
@@ -9,13 +9,13 @@ export default function(item) {
     let title = item.getElementsByClassName('title')[0]
     if (videoUrlReg.test(title.href)) {
         let vid = videoModel(
-            //av
+            // av
             item.dataset.aid,
-            //name
+            // name
             title.innerHTML,
-            //up
+            // up
             /^UP主：(.*)$/.exec(info.getElementsByClassName('author')[0].innerHTML)[1],
-            //length
+            // length
             cover.getElementsByClassName('length')[0].innerHTML
         )
         return vid

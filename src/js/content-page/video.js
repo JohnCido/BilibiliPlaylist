@@ -1,14 +1,17 @@
-require('../../css/video.less')
+import { browser } from 'webextension-polyfill-ts'
+
 import util from '../util'
 import dom from '../domNode'
 
-//Sentry
+// Sentry
 import Raven from 'raven-js'
-//Amplitude
+// Amplitude
 import Amplitude from 'amplitude-js'
 import * as amplitudeTypes from '../analytics.types'
 let amplitudeInstance = Amplitude.getInstance()
 amplitudeInstance.init(amplitudeTypes.API_KEY)
+
+require('../../css/video.less')
 
 var initialized = false
 var loaded = false
@@ -21,34 +24,34 @@ var infoBar
 
 var nextVideoIndex
 
-function $(id) {
-    return document.getElementById(id)
-}
+// function $ (id) {
+//     return document.getElementById(id)
+// }
 
-function $c(c) {
+function $c (c) {
     return document.getElementsByClassName(c)
 }
 
-//Respond to page url change
+// Respond to page url change
 // window.addEventListener('hashchange', () => {
 //     setTimeout(function() {
 //         validate()
 //     }, 250);
 // })
 window.onload = function () {
-    Raven.config('https://07112646a4334707b6a9a2477c43a195@sentry.io/263709').install();
+    Raven.config('https://07112646a4334707b6a9a2477c43a195@sentry.io/263709').install()
     Raven.context(() => {
         validate()
     })
 }
 
-//Validate page url, check if it's a video page with bpid parameter
-function validate() {
+// Validate page url, check if it's a video page with bpid parameter
+function validate () {
     let url = document.URL
     if (pageUrlReg.test(url)) {
         let id = pageUrlReg.exec(document.URL)[2]
         seed = pageUrlReg.exec(document.URL)[3]
-        chrome.storage.local.get(id, (obj) => {
+        browser.storage.local.get(id, (obj) => {
             if (Object.keys(obj).length === 0) { return }
             list = obj[id]
             util.shuffle(list.vids, seed)
@@ -57,32 +60,31 @@ function validate() {
     }
 }
 
-function init() {
+function init () {
     if (initialized) { return }
-    //Add CSS
-    util.AddSheetFile(`${chrome.extension.getURL('/')}video.css`)
-    
-    //Start playing video
+    // Add CSS
+    util.AddSheetFile(`${browser.extension.getURL('/')}video.css`)
+
+    // Start playing video
     util.intervalTest(() => {
         let v = dom.firstChild($c('bilibili-player-video')[0])
         return v !== null && v !== undefined
     }, () => {
         let video = dom.firstChild($c('bilibili-player-video')[0])
         video.addEventListener('ended', next)
-        
         video.setAttribute('preload', 'auto')
         video.addEventListener('canplaythrough', () => video.play())
     })
 
-    //Scroll the page to show the player
+    // Scroll the page to show the player
     window.scrollTo(0, 400)
-    
-    //Open recommend panel and change button text
+
+    // Open recommend panel and change button text
     let listButton = $c('bilibili-player-filter-btn')[0]
     let listButtonLabel = listButton.firstChild.firstChild
     listButtonLabel.innerHTML = '播放列表'
     util.fireEvent('click', listButton)
-    //Load list into panel
+    // Load list into panel
     listContainer = $c('bilibili-player-recommend')[0]
     util.intervalTest(() => {
         return listContainer.innerHTML !== ''
@@ -97,29 +99,29 @@ function init() {
     initialized = true
 }
 
-function loadList() {
+function loadList () {
     if (loaded) { return }
 
     listContainer.classList.add('bp-list-container')
     listContainer.style.display = 'block'
     listContainer.innerHTML = ''
-    let id = pageUrlReg.exec(document.URL)[2]
-    //Remove current breadcrumbs
+    // let id = pageUrlReg.exec(document.URL)[2]
+    // Remove current breadcrumbs
     infoBar = $c('tminfo')[0]
     while (dom.firstChild(infoBar).tagName !== 'TIME') {
         let b = dom.firstChild(infoBar)
         b.parentNode.removeChild(b)
     }
-    //Load breadcrumbs
+    // Load breadcrumbs
     util.append(
         infoBar,
         [
-            //space
+            // space
             // util.create({
             //     type: undefined,
             //     inner: '    '
             // }),
-            //Link to fav folder
+            // Link to fav folder
             util.append(util.create({
                 type: 'span',
                 prop: [['typeof', 'v:Breadcrumb']]
@@ -133,12 +135,12 @@ function loadList() {
                     ['target', '_blank']
                 ]
             })),
-            //Separator
+            // Separator
             util.create({
                 type: undefined,
                 inner: ' > '
             }),
-            //Link to owner profile
+            // Link to owner profile
             util.create({
                 type: 'a',
                 inner: list.owner,
@@ -153,13 +155,14 @@ function loadList() {
         true
     )
 
-    //Load video list
+    // Load video list
     var index = 0
     var lock = false
     for (let [i, vid] of list.vids.entries()) {
         let isActive = pageUrlReg.exec(document.URL)[1] === vid.av
-        if (!isActive && !lock) { index++ }
-        else { lock = true }
+        if (!isActive && !lock) index++
+        else lock = true
+
         let a = util.create({
             type: 'a',
             class: `bp-list-item${isActive ? ' active' : ''}`,
@@ -187,8 +190,8 @@ function loadList() {
     }
 
     nextVideoIndex = index === list.vids.length - 1 ? 0 : index + 1
-    let containerHeight = parseInt(/^(\d+)px$/.exec(util.styleValue('height', listContainer.parentNode)))
-    //Update scroll position inside list
+    // let containerHeight = parseInt(/^(\d+)px$/.exec(util.styleValue('height', listContainer.parentNode)))
+    // Update scroll position inside list
     let contentH = list.vids.length * 32
     let ratio = index / list.vids.length
     let top = contentH * ratio + ratio * 2.75 * 32
@@ -199,7 +202,7 @@ function loadList() {
     loaded = true
 }
 
-function next(auto=true) {
+function next (auto = true) {
     amplitudeInstance.logEvent(amplitudeTypes.PLAY_NEXT, {
         auto: auto
     })

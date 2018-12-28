@@ -1,4 +1,4 @@
-export default function(id, name, owner, uid, personal, priv) {
+export default function (id, name, owner, uid, personal, priv) {
     return {
         id: id,
         name: name,

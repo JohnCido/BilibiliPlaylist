@@ -1,15 +1,15 @@
 import seededShuffle from 'seededshuffle'
-import randomString from 'randomstring'
+// import randomString from 'randomstring'
 
 let util = module.exports = {
-    //param: type id class prop data css inner event
+    // param: type id class prop data css inner event
     create: function (param) {
-        //print(param);
-        var t;
-        if (param.type !== 'svg' && param.type !== 'path' && param.type !== 'circle')
+        var t
+        if (param.type !== 'svg' && param.type !== 'path' && param.type !== 'circle') {
             t = document.createElement(param.type)
-        else
-            t = document.createElementNS('http://www.w3.org/2000/svg', param.type);
+        } else {
+            t = document.createElementNS('http://www.w3.org/2000/svg', param.type)
+        }
         if (param.class) t.className = param.class
         if (param.id) t.id = param.id
         if (param.css) {
@@ -38,31 +38,25 @@ let util = module.exports = {
         return t
     },
 
-    //target: append to this target; list: child node(s); first: set true if append at first
-    //child: true if return appended child node
+    // target: append to this target list: child node(s) first: set true if append at first
+    // child: true if return appended child node
     append: function (target, list, first = false, child = false) {
         var node
         if (Array.isArray(list)) {
             list.forEach(function (item, index) {
-                if (first)
-                    node = target.insertBefore(item, target.firstChild)
-                else
-                    node = target.appendChild(item)
+                if (first) node = target.insertBefore(item, target.firstChild)
+                else node = target.appendChild(item)
             })
         } else {
-            if (first)
-                node = target.insertBefore(list, target.firstChild)
-            else
-                node = target.appendChild(list)
+            if (first) node = target.insertBefore(list, target.firstChild)
+            else node = target.appendChild(list)
         }
-        if (child)
-            return node
-        else
-            return target
+        if (child) return node
+        else return target
     },
 
-    //append css sheet
-    AddSheetFile: function (path){
+    // append css sheet
+    AddSheetFile: function (path) {
         document.head.appendChild(util.create({
             type: 'link',
             prop: [
@@ -73,15 +67,15 @@ let util = module.exports = {
         }))
     },
 
-    //Simulate event on element
-    //https://stackoverflow.com/questions/2705583
-    fireEvent: function (etype, el){
+    // Simulate event on element
+    // https://stackoverflow.com/questions/2705583
+    fireEvent: function (etype, el) {
         if (el.fireEvent) {
-            el.fireEvent('on' + etype);
+            el.fireEvent('on' + etype)
         } else {
-            var evObj = document.createEvent('Events');
-            evObj.initEvent(etype, true, false);
-            el.dispatchEvent(evObj);
+            var evObj = document.createEvent('Events')
+            evObj.initEvent(etype, true, false)
+            el.dispatchEvent(evObj)
         }
     },
 
@@ -90,10 +84,10 @@ let util = module.exports = {
         return style.getPropertyValue(type)
     },
 
-    //Run a test on an interval and call callback when test return true
-    intervalTest: function(test, callback, timeout = 50, tolerance = 2500) {
+    // Run a test on an interval and call callback when test return true
+    intervalTest: function (test, callback, timeout = 50, tolerance = 2500) {
         const begin = new Date()
-    
+
         let interval = setInterval(() => {
             const t = new Date() - begin
             if (t > tolerance) { clearInterval(interval) }
@@ -104,7 +98,7 @@ let util = module.exports = {
         }, timeout)
     },
 
-    shuffle: function(list, seed) {
+    shuffle: function (list, seed) {
         if (seed === '0' || seed === undefined) return
         seededShuffle.shuffle(list, seed)
     }
