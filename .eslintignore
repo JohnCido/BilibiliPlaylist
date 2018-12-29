@@ -1,3 +1,4 @@
-/dist
+/develop
+/production
 /node_modules
 /.nuxt

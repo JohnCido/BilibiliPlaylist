@@ -22,14 +22,14 @@
 
     "content_scripts": [
         {
-            "run_at": "document_end",
+            "run_at": "document_idle",
             "matches": ["*://space.bilibili.com/*"],
             "js": [
                 "./favorite.js"
             ]
         },
         {
-            "run_at": "document_end",
+            "run_at": "document_idle",
             "matches": ["*://www.bilibili.com/video/*"],
             "js": [
                 "./video.js"

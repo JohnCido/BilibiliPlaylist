@@ -1,7 +1,7 @@
 import { browser } from 'webextension-polyfill-ts'
-import * as compareVersions from 'compare-versions'
+import compareVersions from 'compare-versions'
 
-import * as amplitude from 'amplitude-js'
+import amplitude from 'amplitude-js'
 import {
     API_KEY,
     EXT_INSTALL,

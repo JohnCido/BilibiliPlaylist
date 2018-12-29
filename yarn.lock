@@ -418,6 +418,11 @@
   resolved "https://registry.yarnpkg.com/@types/amplitude-js/-/amplitude-js-4.4.0.tgz#6fd45f4a995cd5b76d4327a86b840f54a5a5ec5e"
   integrity sha512-oWT9VR9rVopMmXDCXh67aEoZTFRZIh6AgSYnlIupjcsM2h+XqPpUYTikeh38fLHoI0r917hukDgOB9eUy+XAcQ==
 
+"@types/async@^2.0.50":
+  version "2.0.50"
+  resolved "https://registry.yarnpkg.com/@types/async/-/async-2.0.50.tgz#117540e026d64e1846093abbd5adc7e27fda7bcb"
+  integrity sha512-VMhZMMQgV1zsR+lX/0IBfAk+8Eb7dPVMWiQGFAt3qjo5x7Ml6b77jUo0e1C3ToD+XRDXqtrfw+6AB0uUsPEr3Q==
+
 "@types/babel-types@*", "@types/babel-types@^7.0.0":
   version "7.0.4"
   resolved "https://registry.yarnpkg.com/@types/babel-types/-/babel-types-7.0.4.tgz#bfd5b0d0d1ba13e351dff65b6e52783b816826c8"
@@ -430,7 +435,7 @@
   dependencies:
     "@types/babel-types" "*"
 
-"@types/node@*":
+"@types/node@*", "@types/node@^10.12.8":
   version "10.12.18"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.18.tgz#1d3ca764718915584fcd9f6344621b7672665c67"
   integrity sha512-fh+pAqt4xRzPfqA6eh3Z2y6fyZavRIumvjhaCL753+TVkGKGhpPeyrJG2JftD0T9q4GF00KjefsQ+PQNDdWQaQ==
@@ -2096,6 +2101,13 @@ caseless@~0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
+
+cash-dom@^3.0.0-beta.3:
+  version "3.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/cash-dom/-/cash-dom-3.0.0-beta.3.tgz#5b613003d7333696397604065b39b065b5ad1086"
+  integrity sha512-q0VnIml7DzWIHSP2XoxGx8WPXJ9sU57jjoHJepj5a3+X97r+9tG8UyIUPnrOdCdYyPp0Oy4G0XsdYqxYLUr9eg==
+  dependencies:
+    "@types/node" "^10.12.8"
 
 center-align@^0.1.1:
   version "0.1.3"

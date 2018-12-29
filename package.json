@@ -20,6 +20,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/amplitude-js": "^4.4.0",
+    "@types/async": "^2.0.50",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.6.1",
@@ -63,6 +64,7 @@
   "dependencies": {
     "amplitude-js": "^4.1.1",
     "async": "^2.6.0",
+    "cash-dom": "^3.0.0-beta.3",
     "compare-versions": "^3.1.0",
     "material-components-web": "^0.33.0",
     "material-design-icons": "^3.0.1",

@@ -13,7 +13,7 @@ module.exports = {
     devtool: isDevelopMode ? 'inline-source-map' : 'nosources-source-map',
     entry: {
         main: path.resolve(__dirname, 'src/js/main.ts'),
-        favorite: path.resolve(__dirname, 'src/js/content-page/favorite.js'),
+        favorite: path.resolve(__dirname, 'src/js/content-page/favorite.ts'),
         video: path.resolve(__dirname, 'src/js/content-page/video.js'),
         popup: path.resolve(__dirname, 'src/js/popup.js')
     },
@@ -31,7 +31,12 @@ module.exports = {
             }, {
                 test: /\.ts$/,
                 exclude: /node_modules/,
-                use: 'ts-loader'
+                use: {
+                    loader: 'ts-loader',
+                    options: {
+                        appendTsSuffixTo: [/\.vue$/]
+                    }
+                }
             }, {
                 test: /\.less$/,
                 use: ExtractTextPlugin.extract({
@@ -98,9 +103,9 @@ module.exports = {
     ],
 
     optimization: {
-        splitChunks: {
-            name: 'common'
-        },
+        // splitChunks: {
+        //     name: 'common'
+        // },
         ...(isDevelopMode ? {} : {
             minimizer: [
                 new TerserPlugin({
