@@ -110,9 +110,9 @@ module.exports = {
     ],
 
     optimization: {
-        // splitChunks: {
-        //     name: 'common'
-        // },
+        splitChunks: {
+            name: 'common'
+        },
         ...(isDevelopMode ? {} : {
             minimizer: [
                 new TerserPlugin({

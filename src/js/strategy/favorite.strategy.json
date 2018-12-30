@@ -1,6 +1,0 @@
-{
-    "favPageURLReg": "^(?:http|https):\\/\\/space\\.bilibili\\.com\\/(\\d+)\\/.*favlist(?:|\\?fid=(\\d+))$",
-    "toolbarRoot": "#page-fav",
-    "toolbarVueRootID": "bilist-root",
-    "initClickListenOn": "#navigator .wrapper"
-}

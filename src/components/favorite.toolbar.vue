@@ -9,18 +9,30 @@
 <script lang="ts">
 import Vue from 'vue'
 import { browser } from 'webextension-polyfill-ts'
-import { CoreStore } from '../js/core'
+import $ from 'cash-dom'
+import CoreStore from '../js/storage'
 const coreStore = new CoreStore()
 
 export default Vue.extend({
-    computed: {
-        store () {
-            return coreStore.store
+    data () {
+        return {
+            store: {}
         }
     },
 
     methods: {
         
+    },
+
+    mounted () {
+        window.onhashchange = () => {
+
+        }
+    },
+
+    created () {
+        this.store = coreStore.store
+        coreStore.onChanged(store => this.store = store)
     }
 })
 </script>
