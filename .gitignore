@@ -58,7 +58,7 @@ typings/
 .env
 
 # Develop and production folder
-develop/
+development/
 production/
 public/
 store/

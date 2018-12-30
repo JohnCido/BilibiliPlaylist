@@ -4,11 +4,11 @@ import {
 
 export class CoreStore {
     private listeners: [] = []
-    private store: object = {}
+    store: object = {}
 
     constructor () {
         this.refreshStore()
-        browser.storage.onChanged.addListener((changes, area) => {
+        browser.storage.onChanged.addListener((_, area) => {
             if (area !== 'local') return
             this.refreshStore()
         })

@@ -1,4 +1,4 @@
-export function intervalTest (test: () => boolean, interval = 50, timeout = 2500) {
+export function intervalTest (test: () => boolean, delay = 0, interval = 50, timeout = 2500) {
     const begin = Date.now()
 
     return new Promise((resolve, reject) => {
@@ -10,7 +10,7 @@ export function intervalTest (test: () => boolean, interval = 50, timeout = 2500
                 return
             }
             if (test()) {
-                resolve()
+                delay > 0 ? setTimeout(resolve, delay) : resolve()
                 clearInterval(repeat)
             }
         }, interval)

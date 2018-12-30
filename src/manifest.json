@@ -15,7 +15,7 @@
     
     "background": {
         "scripts": [
-            "./main.js"
+            "./background.js"
         ],
         "persistent": false
     },
@@ -26,6 +26,9 @@
             "matches": ["*://space.bilibili.com/*"],
             "js": [
                 "./favorite.js"
+            ],
+            "css": [
+                "./favorite.css"
             ]
         },
         {

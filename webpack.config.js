@@ -4,21 +4,22 @@ var CopyFilesPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
+const ChromeExtensionReloader = require('webpack-chrome-extension-reloader')
 
-const isDevelopMode = process.env.NODE_ENV === 'develop'
-const directory = isDevelopMode ? 'develop' : 'production'
+const mode = process.env.NODE_ENV
+const isDevelopMode = mode === 'development'
 
 module.exports = {
-    mode: isDevelopMode ? 'development' : 'production',
+    mode,
     devtool: isDevelopMode ? 'inline-source-map' : 'nosources-source-map',
     entry: {
-        main: path.resolve(__dirname, 'src/js/main.ts'),
-        favorite: path.resolve(__dirname, 'src/js/content-page/favorite.ts'),
-        video: path.resolve(__dirname, 'src/js/content-page/video.js'),
-        popup: path.resolve(__dirname, 'src/js/popup.js')
+        background: './src/js/main.ts',
+        favorite: './src/js/content-page/favorite.ts',
+        video: './src/js/content-page/video.js',
+        popup: './src/js/popup.js'
     },
     output: {
-        path: path.resolve(__dirname, `${directory}/`),
+        path: path.resolve(__dirname, `${mode}/`),
         filename: '[name].js'
     },
 
@@ -55,7 +56,7 @@ module.exports = {
                             loader: 'sass-loader',
                             options: {
                                 sourceMap: false,
-                                includePaths: [ path.resolve(__dirname, 'node_modules') ]
+                                includePaths: [ './node_modules' ]
                             }
                         }
                     ],
@@ -93,7 +94,13 @@ module.exports = {
             debug: 'warning'
         }),
         new ExtractTextPlugin({ filename: '[name].css', disable: false, allChunks: true }),
-        ...(isDevelopMode ? [] : [
+        ...(isDevelopMode ? [
+            new ChromeExtensionReloader({
+                entries: {
+                    contentScript: [ 'favorite', 'video' ]
+                }
+            })
+        ] : [
             new webpack.DefinePlugin({
                 'process.env': {
                     NODE_ENV: JSON.stringify('production')

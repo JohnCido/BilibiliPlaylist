@@ -6,7 +6,7 @@
   "scripts": {
     "init": "sudo npm i -g webpack npm-check-updates",
     "update": "ncu -u",
-    "start": "cross-env NODE_ENV=develop webpack -w",
+    "start": "cross-env NODE_ENV=development webpack --mode=development -w",
     "production": "cross-env NODE_ENV=production webpack",
     "archive": "node archive.js",
     "distributeUnix": "rm -rf cache && rm -rf production && npm run production && cd production; zip -r -X upload.zip * && npm run archive",
@@ -59,6 +59,7 @@
     "vue-template-compiler": "^2.5.16",
     "web-ext": "^2.9.3",
     "webpack": "^4.4.1",
+    "webpack-chrome-extension-reloader": "^1.1.1",
     "webpack-cli": "^3.0.0"
   },
   "dependencies": {
