@@ -1,5 +1,5 @@
 <template lang="pug">
-.bl-toolbar-stripe
+.bl-toolbar-stripe(v-show='fid !== undefined')
     button.icon.fetch(title='缓存为列表')
     button.icon.play(title='顺序播放')
     button.icon.shuffle(title='随机播放')
@@ -10,29 +10,36 @@
 import Vue from 'vue'
 import { browser } from 'webextension-polyfill-ts'
 import $ from 'cash-dom'
-import CoreStore from '../js/storage'
+import {
+    currentFavItemSelector,
+    fidRefreshTriggerSelector
+} from '../js/strategy/favorite.strategy'
+import CoreStore, { defaultDataStore } from '../js/storage'
 const coreStore = new CoreStore()
 
 export default Vue.extend({
     data () {
         return {
-            store: {}
+            store: defaultDataStore,
+            fid: 0
         }
     },
 
     methods: {
-        
-    },
-
-    mounted () {
-        window.onhashchange = () => {
-
+        refreshFID () {
+            const cur = $(currentFavItemSelector)
+            this.fid = cur.attr('fid')
         }
     },
 
     created () {
         this.store = coreStore.store
         coreStore.onChanged(store => this.store = store)
+    },
+
+    mounted () {
+        this.refreshFID()
+        $(fidRefreshTriggerSelector).on('click', () => setTimeout(this.refreshFID, 100))
     }
 })
 </script>

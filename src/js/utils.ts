@@ -1,3 +1,15 @@
+/**
+ * Run the `test` on an `interval` and resolve promise after the `delay` once the `test` passes.
+ * Reject if The `test` takes longer than `timeout` to pass.
+ * Set `timeout` to `0` or lower to run the `test` forever.
+ *
+ * @export
+ * @param {() => boolean} test
+ * @param {number} [delay=0]
+ * @param {number} [interval=50]
+ * @param {number} [timeout=2500]
+ * @returns `Promise`
+ */
 export function intervalTest (test: () => boolean, delay = 0, interval = 50, timeout = 2500) {
     const begin = Date.now()
 

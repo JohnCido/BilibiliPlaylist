@@ -7,6 +7,11 @@ export interface IDataStore {
     lists: { string?: IListModel }
 }
 
+export const defaultDataStore: IDataStore = {
+    usage: false,
+    lists: { }
+}
+
 export interface IListModel {
     id: string
     name: string
@@ -27,10 +32,7 @@ export interface IVideoModel {
 
 export default class CoreStore {
     private listeners: { (store: IDataStore): void }[] = []
-    private _store: IDataStore = {
-        usage: false,
-        lists: { }
-    }
+    private _store: IDataStore = defaultDataStore
 
     set store (val) {
         this._store = val
@@ -56,10 +58,7 @@ export default class CoreStore {
                 lists: result.lists || []
             }
         }).catch(() => {
-            this.store = {
-                usage: false,
-                lists: { }
-            }
+            this.store = defaultDataStore
         })
     }
 
