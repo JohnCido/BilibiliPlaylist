@@ -1,6 +1,6 @@
 <template lang="pug">
 .bl-toolbar-stripe(v-show='fid !== undefined')
-    button.icon.fetch(title='缓存为列表')
+    button.icon(title='缓存为列表' :class='isFIDCached ? "sync" : "fetch"')
     button.icon.play(title='顺序播放')
     button.icon.shuffle(title='随机播放')
     button.bl
@@ -21,7 +21,13 @@ export default Vue.extend({
     data () {
         return {
             store: defaultDataStore,
-            fid: 0
+            fid: '0'
+        }
+    },
+
+    computed: {
+        isFIDCached (): boolean {
+            return this.store.lists[this.fid] !== undefined
         }
     },
 
@@ -70,6 +76,10 @@ export default Vue.extend({
 
             &.fetch {
                 background-image: url('../img/content-page/get_app.svg');
+            }
+
+            &.sync {
+                background-image: url('../img/content-page/sync.svg');
             }
 
             &.play {

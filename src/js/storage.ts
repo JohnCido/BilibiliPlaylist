@@ -4,7 +4,7 @@ import {
 
 export interface IDataStore {
     usage: boolean
-    lists: { string?: IListModel }
+    lists: { [key: string]: IListModel }
 }
 
 export const defaultDataStore: IDataStore = {
