@@ -15,7 +15,7 @@ export const defaultDataStore: IDataStore = {
 export interface IListModel {
     id: string
     name: string
-    udpatedOn: Date
+    udpatedOn: number
     owner: string
     uid: string
     personal: boolean
@@ -34,6 +34,11 @@ export default class CoreStore {
     private listeners: { (store: IDataStore): void }[] = []
     private _store: IDataStore = defaultDataStore
 
+    private _get = browser.storage.local.get
+    private _set = browser.storage.local.set
+    private _remove = browser.storage.local.remove
+    private _clear = browser.storage.local.clear
+
     set store (val) {
         this._store = val
         for (let listener of this.listeners) listener(this.store)
@@ -51,8 +56,11 @@ export default class CoreStore {
         })
     }
 
+    /**
+     * Refresh `_store` property
+     */
     private refreshStore () {
-        browser.storage.local.get(null).then(result => {
+        this._get(null).then(result => {
             this.store = {
                 usage: result.usage || false,
                 lists: result.lists || []
@@ -62,16 +70,35 @@ export default class CoreStore {
         })
     }
 
+    /**
+     * Allow external code listens to the storage change
+     * @param listener A function to receive changed store
+     */
     public onChanged (listener: (store: IDataStore) => void) {
         this.listeners.push(listener)
     }
 
+    /**
+     * Save list into the storage.
+     * Update existing list.
+     * @param list
+     */
     public updateList (list: IListModel) {
-        browser.storage.local.set({
+        this._set({
             lists: {
-                [list.id]: list,
-                ...this.store.lists
+                ...this.store.lists,
+                [list.id]: list
             }
         })
+    }
+
+    /**
+     * Remove list with matching id from the storage
+     * @param id
+     */
+    public removeList (id: string | number) {
+        const lists = { ...this.store.lists }
+        delete lists[id]
+        this._set({ lists })
     }
 }

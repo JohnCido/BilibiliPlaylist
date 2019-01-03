@@ -1,32 +1,37 @@
 import Vue from 'vue'
 import $ from 'cash-dom'
-import * as strategy from '../strategy/favorite.strategy'
+import {
+    initRefreshNavTriggerSelectors,
+    favPageURLReg,
+    toolbarRootSelector,
+    toolbarVueRootID
+} from '../strategy/favorite.strategy'
 import toolbar from '../../components/favorite.toolbar.vue'
 import { intervalTest } from '../utils'
 
 init()
 
-intervalTest(() => {
-    const wrapper = $(strategy.initRefreshNavTriggerSelector)[0]
+initRefreshNavTriggerSelectors.map(selector => intervalTest(() => {
+    const wrapper = $(selector)[0]
     return wrapper !== undefined
 }, 200, 200, 10000).then(() => {
-    $(strategy.initRefreshNavTriggerSelector)[0].onclick = () => {
+    $(selector).on('click', () => {
         setTimeout(init, 200)
-    }
-}).catch(() => { })
+    })
+}).catch(() => { }))
 
 function init () {
-    if (!new RegExp(strategy.favPageURLReg).test(document.URL)) return
-    if ($(`#${strategy.toolbarVueRootID}`)[0]) return
+    if (!new RegExp(favPageURLReg).test(document.URL)) return
+    if ($(`#${toolbarVueRootID}`)[0]) return
 
     intervalTest(() => {
-        const root = $(strategy.toolbarRootSelector)[0]
+        const root = $(toolbarRootSelector)[0]
         return root !== undefined
     }, 800, 100, 15000).then(() => {
-        const root = $(strategy.toolbarRootSelector)
-        root.append(`<div id='${strategy.toolbarVueRootID}'></div>`)
+        const root = $(toolbarRootSelector)
+        root.append(`<div id='${toolbarVueRootID}'></div>`)
         new Vue({
-            el: `#${strategy.toolbarVueRootID}`,
+            el: `#${toolbarVueRootID}`,
             render: r => r(toolbar)
         })
     }).catch(() => { })

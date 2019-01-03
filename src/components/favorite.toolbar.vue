@@ -1,9 +1,11 @@
 <template lang="pug">
 .bl-toolbar-stripe(v-show='fid !== undefined')
-    button.icon(title='缓存为列表' :class='isFIDCached ? "sync" : "fetch"')
+    button.icon(title='缓存为列表' :class='isFIDCached ? "sync" : "fetch"' @click='save')
     button.icon.play(title='顺序播放')
     button.icon.shuffle(title='随机播放')
     button.bl
+
+    .bl-processing-overlay(v-show='')
 </template>
 
 <script lang="ts">
@@ -12,16 +14,24 @@ import { browser } from 'webextension-polyfill-ts'
 import $ from 'cash-dom'
 import {
     currentFavItemSelector,
+    favItemIDAttrKey,
     fidRefreshTriggerSelector
 } from '../js/strategy/favorite.strategy'
-import CoreStore, { defaultDataStore } from '../js/storage'
+import {
+    crawlList
+} from '../js/content-page/favorite.crawler'
+import CoreStore, {
+    defaultDataStore,
+    IListModel
+} from '../js/storage'
 const coreStore = new CoreStore()
 
 export default Vue.extend({
     data () {
         return {
             store: defaultDataStore,
-            fid: '0'
+            fid: '0',
+            processing: false
         }
     },
 
@@ -34,7 +44,17 @@ export default Vue.extend({
     methods: {
         refreshFID () {
             const cur = $(currentFavItemSelector)
-            this.fid = cur.attr('fid')
+            this.fid = cur.attr(favItemIDAttrKey)
+        },
+        save () {
+            this.processing = true
+            crawlList().then((list: IListModel) => {
+                coreStore.updateList(list)
+                this.processing = false
+            }).catch(reason => {
+                this.processing = false
+                alert(reason)
+            })
         }
     },
 
@@ -99,6 +119,15 @@ export default Vue.extend({
             pointer-events: none;
         }
     }
+}
+
+.bl-processing-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 20000;
 }
 </style>
 
