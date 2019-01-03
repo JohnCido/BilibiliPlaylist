@@ -10,7 +10,6 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { browser } from 'webextension-polyfill-ts'
 import $ from 'cash-dom'
 import {
     currentFavItemSelector,

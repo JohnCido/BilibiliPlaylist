@@ -16,7 +16,7 @@ module.exports = {
         background: './src/js/main.ts',
         favorite: './src/js/content-page/favorite.ts',
         video: './src/js/content-page/video.js',
-        popup: './src/js/popup.js'
+        popup: './src/js/popup.ts'
     },
     output: {
         path: path.resolve(__dirname, `${mode}/`),
