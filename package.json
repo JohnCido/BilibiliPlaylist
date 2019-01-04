@@ -1,8 +1,16 @@
 {
   "name": "bilibili-playlist",
-  "version": "1.0.0",
-  "description": "",
-  "main": "",
+  "version": "2.0.0",
+  "description": "[![Greenkeeper badge](https://badges.greenkeeper.io/JohnCido/BilibiliPlaylist.svg)](https://greenkeeper.io/) [![Build Status](https://travis-ci.org/JohnCido/BilibiliPlaylist.svg?branch=master)](https://travis-ci.org/JohnCido/BilibiliPlaylist)",
+  "main": "src/main.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JohnCido/BilibiliPlaylist.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JohnCido/BilibiliPlaylist/issues"
+  },
+  "homepage": "https://github.com/JohnCido/BilibiliPlaylist#readme",
   "scripts": {
     "init": "sudo npm i -g webpack npm-check-updates",
     "update": "ncu -u",
@@ -16,8 +24,8 @@
     "chrome",
     "extension"
   ],
-  "author": "CIL",
-  "license": "MIT",
+  "author": "John Cido",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@types/amplitude-js": "^4.4.0",
     "@types/async": "^2.0.50",

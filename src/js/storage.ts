@@ -101,4 +101,25 @@ export default class CoreStore {
         delete lists[id]
         this._set({ lists })
     }
+
+    /**
+     * Remove all playlists
+     */
+    public removeAllLists () {
+        this._set({
+            lists: { }
+        })
+    }
+
+    /**
+     * Set a value by the key in the storage
+     * @param key
+     * @param value
+     */
+    public set (key: string | number, value: any) {
+        if (key === 'lists') throw new Error('Keyword lists is protected.')
+        this._set({
+            [key]: value
+        })
+    }
 }
