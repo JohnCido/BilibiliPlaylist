@@ -1,5 +1,6 @@
 import seededShuffle from 'seededshuffle'
 import { IVideoModel } from './storage'
+import { videoPageBaseURL } from './strategy/video.strategy'
 
 /**
  * Run the `test` on an `interval` and resolve promise after the `delay` once the `test` passes.
@@ -39,7 +40,7 @@ export function intervalTest (test: () => boolean, delay = 0, interval = 50, tim
  * @param shuffle Whether it's in shuffle mode
  */
 export function generateVideoURL (id: string | number, av: string | number, seed = '0') {
-    return `https://www.bilibili.com/video/av${av}?bpid=${id}&seed=${seed}`
+    return `${videoPageBaseURL}av${av}/?bpid=${id}&seed=${seed}`
 }
 
 /**
@@ -63,7 +64,7 @@ export function randomString (length = 5) {
  * @param seed
  */
 export function shuffleVideos (vids: IVideoModel[], seed: string): IVideoModel[] {
-    if (!seed) return vids
+    if (seed === '0') return vids
     return seededShuffle.shuffle(vids, seed)
 }
 

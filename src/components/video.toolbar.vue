@@ -1,35 +1,118 @@
 <template lang="pug">
-.bl-video-toolbar
+.bl-video-toolbar(v-show='valid')
     .list
     .footer
         .logo
-        button.text
-            .list-name
-            .next-up
-        button.list
+        button.text(@click='next' :title='nextVideoName')
+            span.list-name {{ list.name }}
+            span.next-up {{ nextVideoName }}
+        button.toggle-list
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import $ from 'cash-dom'
 import {
-    generateVideoURL
+    whilst
+} from 'async'
+import {
+    generateVideoURL,
+    shuffleVideos
 } from '../js/utils'
 import CoreStore, {
     defaultDataStore,
-    IListModel
+    IListModel,
+    IVideoModel
 } from '../js/storage'
+import {
+    videoPageURLReg,
+    videoSelector
+} from '../js/strategy/video.strategy'
 const coreStore = new CoreStore()
 
 export default Vue.extend({
     data () {
         return {
-            store: defaultDataStore
+            store: defaultDataStore,
+            valid: false,
+            av: 0,
+            listID: '',
+            seed: '0'
+        }
+    },
+
+    computed: {
+        list (): IListModel {
+            return this.store.lists[this.listID] || { }
+        },
+
+        videos (): IVideoModel[] {
+            const vids = this.list.vids || []
+            return shuffleVideos(vids, this.seed)
+        },
+
+        videosIndexMap (): { [key: number]: number } {
+            return this.videos.map((vid, index) => {
+                return {
+                    [vid.av]: index
+                }
+            }).reduce((a, c) => {
+                return { ...a, ...c }
+            }, { })
+        },
+
+        nextVideoIndex (): number {
+            const current = this.videosIndexMap[this.av] || 0
+            return current === this.videos.length - 1 ? 0 : current + 1
+        },
+
+        nextVideoName (): string {
+            return (this.videos[this.nextVideoIndex] || { }).name || ''
+        },
+
+        nextVideoURL (): string {
+            return generateVideoURL(this.listID, this.videos[this.nextVideoIndex].av, this.seed)
+        }
+    },
+
+    methods: {
+        validateURL () {
+            const url = document.URL
+            this.valid = videoPageURLReg.test(url)
+            if (!this.valid) return
+            const [_ = '', av = '0', listID = '', seed = '0'] = videoPageURLReg.exec(url) || []
+            this.av = parseInt(av)
+            this.listID = listID
+            this.seed = seed
+        },
+
+        open (url: string) {
+            window.location.replace(url)
+        },
+
+        next () {
+            this.open(this.nextVideoURL)
         }
     },
 
     created () {
         this.store = coreStore.store
         coreStore.onChanged(store => this.store = store)
+        this.validateURL()
+    },
+
+    mounted () {
+        let video: HTMLVideoElement
+        whilst(() => video === undefined, callback => {
+            video = $(videoSelector)[0]
+            callback()
+        }, err => {
+            if (err) { return }
+            video.preload = 'auto'
+            video.autoplay = true
+            video.addEventListener('ended', this.next)
+            video.play()
+        })
     }
 })
 </script>
@@ -62,7 +145,7 @@ export default Vue.extend({
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding:  0 12px 0 16px;
+        padding-left: 16px;
 
         .logo {
             .flex-w(10px);
@@ -74,23 +157,29 @@ export default Vue.extend({
 
         .text {
             width: 100%;
+            height: 100%;
             margin-left: 16px;
-            margin-right: 12px;
+            padding-right: 12px;
             text-align: left;
             overflow: hidden;
+
+            span {
+                display: block;
+            }
 
             .list-name {
                 width: 100%;
                 font-size: 10px;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
             .next-up {
-                width: 100%;
                 font-size: 12px;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                white-space: nowrap;
                 color: @azure;
 
                 &::before {
@@ -98,6 +187,14 @@ export default Vue.extend({
                     color: @black-secondary;
                 }
             }
+        }
+
+        .toggle-list {
+            .flex-w(50px);
+            height: 100%;
+            background-image: url('../img/content-page/list.svg');
+            background-repeat: no-repeat;
+            background-position: center;
         }
     }
 
