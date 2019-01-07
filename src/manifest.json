@@ -36,6 +36,9 @@
             "matches": ["*://www.bilibili.com/video/*"],
             "js": [
                 "./video.js"
+            ],
+            "css": [
+                "./video.css"
             ]
         }
     ],

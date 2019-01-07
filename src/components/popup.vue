@@ -16,7 +16,7 @@
             .disable-scrim(v-show='showSettings' @click='showSettings = false')
         #empty(v-show='isListEmpty')
             span 看什么看，没有列表
-            a.add(href='https://bilibili.com')
+            button.add(@click='open("https://bilibili.com")')
         footer
             div
                 .cell.dark
@@ -31,16 +31,21 @@
                 .cell.dark
                     .text
                         .title 我的 B 站空间
-                    button.icon.open_in_new
+                    button.icon.open_in_new(@click='open("https://space.bilibili.com/1528379")')
 
             .copyright 版权所有 © 2019 John Cido.<br/>保留所有你能想到或者想不到的解释权。
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import {
+    generateRepeatVideoURL,
+    generateShuffleVideoURL
+} from '../js/utils'
 import CoreStore, {
     defaultDataStore,
-    IListModel
+    IListModel,
+    IVideoModel
 } from '../js/storage'
 const coreStore = new CoreStore()
 
@@ -120,8 +125,13 @@ export default Vue.extend({
             }
         },
 
+        videosOfList (id: string | number): IVideoModel[] {
+            return this.store.lists[id].vids
+        },
+
         listItemActionA (id: string | number) {
             // Shuffle play the list
+            this.open(generateShuffleVideoURL(id, this.videosOfList(id)))
         },
 
         listItemActionB (id: string | number) {
@@ -132,6 +142,7 @@ export default Vue.extend({
                 break
             case 'play':
                 // Play the list
+                this.open(generateRepeatVideoURL(id, this.videosOfList(id)))
                 break
             default:
                 break
@@ -140,6 +151,10 @@ export default Vue.extend({
 
         toggleUsageSetting () {
             coreStore.set('usage', !this.usage)
+        },
+
+        open (url: string) {
+            window.open(url)
         }
     },
 

@@ -15,7 +15,7 @@ module.exports = {
     entry: {
         background: './src/js/main.ts',
         favorite: './src/js/content-page/favorite.ts',
-        video: './src/js/content-page/video.js',
+        video: './src/js/content-page/video.ts',
         popup: './src/js/popup.ts'
     },
     output: {

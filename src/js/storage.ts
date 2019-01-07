@@ -24,7 +24,7 @@ export interface IListModel {
 }
 
 export interface IVideoModel {
-    av: string
+    av: number
     name: string
     up: string
     length: string
