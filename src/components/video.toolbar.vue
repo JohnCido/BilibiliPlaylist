@@ -13,11 +13,9 @@
 import Vue from 'vue'
 import $ from 'cash-dom'
 import {
-    whilst
-} from 'async'
-import {
     generateVideoURL,
-    shuffleVideos
+    shuffleVideos,
+    intervalTest
 } from '../js/utils'
 import CoreStore, {
     defaultDataStore,
@@ -26,7 +24,8 @@ import CoreStore, {
 } from '../js/storage'
 import {
     videoPageURLReg,
-    videoSelector
+    videoSelector,
+    videoPageDanmakuRowSelector
 } from '../js/strategy/video.strategy'
 const coreStore = new CoreStore()
 
@@ -103,15 +102,26 @@ export default Vue.extend({
 
     mounted () {
         let video: HTMLVideoElement
-        whilst(() => video === undefined, callback => {
+        intervalTest(() => {
             video = $(videoSelector)[0]
-            callback()
-        }, err => {
-            if (err) { return }
+            return video !== undefined
+        }, 50, 70, 15000).then(() => {
             video.preload = 'auto'
-            video.autoplay = true
-            video.addEventListener('ended', this.next)
-            video.play()
+            video.addEventListener('ended', () => {
+                if (!this.valid) return
+                this.next()
+            })
+            // Wait until danmuku loads
+            intervalTest(
+                () => $(videoPageDanmakuRowSelector)[0] !== undefined
+            , 100, 40, 2000).then(() => {
+                if (!this.valid) return
+                video.play()
+            }).catch(reason => {
+                // Start playing anyway if something wrong happened
+                if (!this.valid) return
+                video.play()
+            })
         })
     }
 })
