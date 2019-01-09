@@ -1,12 +1,16 @@
 <template lang="pug">
-.bl-video-toolbar(v-show='valid')
+.bl-video-toolbar(v-show='valid' :class='expanded ? "expanded" : ""')
     .list
+        button.item(v-for='(video, index) in videos' :key='index' :class='video.av === av ? "active" : ""' @click='goto(video.av)')
+            .index {{ index }}
+            .name {{ video.name }}
+            .length {{ video.length }}
     .footer
         .logo
         button.text(@click='next' :title='nextVideoName')
             span.list-name {{ list.name }}
             span.next-up {{ nextVideoName }}
-        button.toggle-list
+        button.toggle-list(@click='expanded = !expanded')
 </template>
 
 <script lang="ts">
@@ -36,7 +40,8 @@ export default Vue.extend({
             valid: false,
             av: 0,
             listID: '',
-            seed: '0'
+            seed: '0',
+            expanded: false
         }
     },
 
@@ -91,6 +96,10 @@ export default Vue.extend({
 
         next () {
             this.open(this.nextVideoURL)
+        },
+
+        goto (av: string | number) {
+            this.open(generateVideoURL(this.listID, av, this.seed))
         }
     },
 
@@ -111,6 +120,7 @@ export default Vue.extend({
                 if (!this.valid) return
                 this.next()
             })
+            video.addEventListener('emptied', this.validateURL)
             // Wait until danmuku loads
             intervalTest(
                 () => $(videoPageDanmakuRowSelector)[0] !== undefined
@@ -131,6 +141,11 @@ export default Vue.extend({
 @import url('../css/universal.less');
 @import url('../css/tokens.less');
 @import url('../css/utils.less');
+
+* {
+    position: relative;
+    box-sizing: border-box;
+}
 
 .bl-video-toolbar {
     width: 320px;
@@ -210,7 +225,56 @@ export default Vue.extend({
 
     .list {
         height: 100%;
+        overflow-x: hidden;
         overflow-y: auto;
+
+        .item {
+            width: 100%;
+            height: 40px;
+            padding: 0 12px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            overflow: hidden;
+
+            .index {
+                .flex-w(32px);
+                color: @azure;
+                text-align: left;
+            }
+
+            .name {
+                width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                margin-left: 4px;
+                margin-right: 4px;
+                text-align: left;
+                color: @black;
+            }
+
+            .length {
+                .flex-w(60px);
+                text-align: right;
+                color: @black-secondary;
+            }
+
+            &.active {
+                .index {
+                    color: transparent;
+                    background-image: url('../img/content-page/play.svg');
+                    background-position: -4px center;
+                    background-repeat: no-repeat;
+                }
+            }
+        }
+    }
+
+    &.expanded {
+        height: 392px;
     }
 }
 </style>
