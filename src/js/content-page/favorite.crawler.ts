@@ -31,17 +31,20 @@ import {
     IListModel,
     IVideoModel
 } from '../storage'
+import { intervalTest } from '../utils'
 
 const clickEventName = 'click'
-export const crawlList = () => new Promise((resolve: (list?: IListModel) => void, reject) => waterfall([(callback: Function) => {
-    // Reset the page index, filter and sort
-    $(pageIndexItemSelector).trigger(clickEventName)
+export const crawlList = () => new Promise((resolve: (list?: IListModel) => void, reject) => waterfall([(callback: any) => {
+    // Reset the filter and sort
     $(pageOptionItemSelector).filter((_: number, item: any) => {
         const name = $(item).text()
         return name === optionNameAllCategory || name === optionNameSortRecent
     }).each((_: number, item: any) => $(item).trigger(clickEventName))
-    // Delay the callback a bit to render content
-    setTimeout(callback, 400)
+    // Go back to page one if necessary
+    setTimeout(() => {
+        if ($(pageIndexItemSelector).text() === '1') callback()
+        else backToPageOne().then(callback).catch(callback)
+    }, 400)
 }, (callback: (err: Error | null, vids?: IVideoModel[]) => void) => {
     // Total videos count
     const total = parseInt($(currentFavVidsCountSelector).text())
@@ -50,12 +53,19 @@ export const crawlList = () => new Promise((resolve: (list?: IListModel) => void
     let progress = 0
     whilst(() => progress < total, (cb: any) => {
         // Fetch info of the single video
-        $(videoItemSelector).each((_: number, ele: any) => {
+        const items: HTMLElement[] = Array.from($(videoItemSelector))
+        for (let ele of items) {
             const item = $(ele)
-            item.data(videoItemFetchedDataFlag, true)
             progress++
-            // Skip video fetch is this video item is dead
-            if (item.hasClass(videoItemUnavailabelClassName)) return
+
+            // Skip video fetch if this video item is dead
+            if (item.hasClass(videoItemUnavailabelClassName)) continue
+            // Skip this video if it has flag
+            if (ele.dataset[videoItemFetchedDataFlag] === videoItemFetchedDataFlag) continue
+
+            // Set the crawler flag
+            ele.dataset[videoItemFetchedDataFlag] = videoItemFetchedDataFlag
+
             // Add video info
             vids.push({
                 av: item.data(videoItemAvDataKey),
@@ -63,19 +73,14 @@ export const crawlList = () => new Promise((resolve: (list?: IListModel) => void
                 up: (videoItemUpNameReg.exec(item.find(videoItemUpNameSelector).text()) || [])[1],
                 length: item.find(videoItemLengthSelector).text()
             })
-        })
-        // Go to next page
-        $(activePageIndexItemSelector).next().trigger(clickEventName)
-        // Wait until first video element has changed
-        if (progress !== total) {
+        }
+        // Stop the process if all videos are already crawled
+        if (progress === total) {
             cb()
             return
         }
-        whilst(
-            () => !$(videoItemSelector).data(videoItemFetchedDataFlag),
-            () => { },
-            cb
-        )
+        // Go to next page
+        jumpToPage($(activePageIndexItemSelector).next()).then(cb).catch(cb)
     }, (err) => {
         if (err) {
             callback(err)
@@ -99,12 +104,31 @@ export const crawlList = () => new Promise((resolve: (list?: IListModel) => void
     })
 }], (err, list?: IListModel) => {
     // Back to page one
-    setTimeout(() => $(pageIndexItemSelector).filter((_: number, item: any) => {
-        return $(item).text() === '1'
-    }).trigger(clickEventName), 300)
+    backToPageOne()
     if (err) {
         reject(err)
         return
     }
     resolve(list)
 }))
+
+/**
+ * Jump to a page index by performing click on given element
+ * @param ele A `HTMLElement` or `Cash` instance
+ */
+function jumpToPage (ele: HTMLElement) {
+    const item = ele instanceof $ ? ele : $(ele)
+    item.trigger(clickEventName)
+    return intervalTest(() => {
+        return ($(videoItemSelector)[0].dataset[videoItemFetchedDataFlag] !== videoItemFetchedDataFlag)
+    })
+}
+
+/**
+ * Shortcut of going back to page one
+ */
+function backToPageOne () {
+    return jumpToPage($(pageIndexItemSelector).filter((_: number, item: any) => {
+        return $(item).text() === '1'
+    }))
+}

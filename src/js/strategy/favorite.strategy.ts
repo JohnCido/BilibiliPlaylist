@@ -39,7 +39,7 @@ export const videoItemUpNameSelector = 'a.cover .meta-mask .meta-info .author'
 // Uploader name filter
 export const videoItemUpNameReg = /^UP主：(.*)$/
 // Dataset used to indicate a video item is already fetched
-export const videoItemFetchedDataFlag = 'bl-fetched'
+export const videoItemFetchedDataFlag = 'bilistfetched'
 // Vieo length
 export const videoItemLengthSelector = 'a.cover .length'
 // List name

@@ -2,7 +2,7 @@
 .bl-video-toolbar(v-show='valid' :class='expanded ? "expanded" : ""')
     .list
         button.item(v-for='(video, index) in videos' :key='index' :class='video.av === av ? "active" : ""' @click='goto(video.av)')
-            .index {{ index }}
+            .index {{ index + 1 }}
             .name {{ video.name }}
             .length {{ video.length }}
     .footer
@@ -148,13 +148,11 @@ export default Vue.extend({
 }
 
 .bl-video-toolbar {
-    width: 320px;
+    @barw: 320px;
+    width: @barw;
     height: 48px;
-    margin: auto;
     position: fixed;
-    right: 0;
     bottom: 0;
-    left: 0;
     border-radius: 4px 4px 0 0;
     background-color: @white;
     box-shadow: 0 0 0 1px @azure-divider;
@@ -163,6 +161,19 @@ export default Vue.extend({
     flex-direction: column;
     align-items: stretch;
     z-index: 20000;
+
+    @wrapperw: 1312px;
+    @narroww: 1464px;
+    @media screen and (min-width: @narroww) {
+        transform: translateX(@wrapperw / 2 - @barw / 2);
+        margin: auto;
+        left: 0;
+        right: 0;
+    }
+
+    @media screen and (max-width: @narroww) {
+        right: 76px;
+    }
 
     .footer {
         .flex-h(48px);
@@ -242,7 +253,7 @@ export default Vue.extend({
             .index {
                 .flex-w(32px);
                 color: @azure;
-                text-align: left;
+                text-align: center;
             }
 
             .name {
@@ -250,23 +261,31 @@ export default Vue.extend({
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
-                margin-left: 4px;
-                margin-right: 4px;
+                margin-left: 8px;
+                margin-right: 8px;
                 text-align: left;
                 color: @black;
             }
 
             .length {
                 .flex-w(60px);
-                text-align: right;
+                text-align: center;
                 color: @black-secondary;
+            }
+
+            &:first-child {
+                margin-top: 8px;
+            }
+
+            &:last-child {
+                padding-bottom: 8px;
             }
 
             &.active {
                 .index {
                     color: transparent;
                     background-image: url('../img/content-page/play.svg');
-                    background-position: -4px center;
+                    background-position: center;
                     background-repeat: no-repeat;
                 }
             }
