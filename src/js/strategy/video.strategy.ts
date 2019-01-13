@@ -1,5 +1,7 @@
 // ID of vue root element
 export const toolbarVueRootID = 'bl-toolbar-vue-root'
+// Video 404 notice selector
+export const videoNotFoundNoticeSelector = '#app .error-body'
 // Base URL of video page
 export const videoPageBaseURL = 'https://www.bilibili.com/video/'
 // RegEx for the video player page

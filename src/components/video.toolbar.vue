@@ -29,7 +29,8 @@ import CoreStore, {
 import {
     videoPageURLReg,
     videoSelector,
-    videoPageDanmakuRowSelector
+    videoPageDanmakuRowSelector,
+videoNotFoundNoticeSelector
 } from '../js/strategy/video.strategy'
 const coreStore = new CoreStore()
 
@@ -66,7 +67,7 @@ export default Vue.extend({
         },
 
         nextVideoIndex (): number {
-            const current = this.videosIndexMap[this.av] || 0
+            const current = this.videosIndexMap[this.av] || -1
             return current === this.videos.length - 1 ? 0 : current + 1
         },
 
@@ -114,7 +115,7 @@ export default Vue.extend({
         intervalTest(() => {
             video = $(videoSelector)[0]
             return video !== undefined
-        }, 50, 70, 15000).then(() => {
+        }, 50, 70).then(() => {
             video.preload = 'auto'
             video.addEventListener('ended', () => {
                 if (!this.valid) return
@@ -132,7 +133,13 @@ export default Vue.extend({
                 if (!this.valid) return
                 video.play()
             })
+        }).catch(reason => {
+            prompt(reason)
         })
+        // This video is gone, skip it
+        intervalTest(
+            () => $(videoNotFoundNoticeSelector)[0] !== undefined,
+        ).then(this.next).catch(() => { })
     }
 })
 </script>
