@@ -48,6 +48,7 @@ export const crawlList = () => new Promise((resolve: (list?: IListModel) => void
 }, (callback: (err: Error | null, vids?: IVideoModel[]) => void) => {
     // Total videos count
     const total = parseInt($(currentFavVidsCountSelector).text())
+    if (total === 0) callback(new Error('空的收藏夹'))
     // Videos array
     const vids: IVideoModel[] = []
     let progress = 0

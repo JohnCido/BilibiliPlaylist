@@ -67,7 +67,7 @@ export default Vue.extend({
         },
 
         nextVideoIndex (): number {
-            const current = this.videosIndexMap[this.av] || -1
+            const current = this.videosIndexMap[this.av] || 0
             return current === this.videos.length - 1 ? 0 : current + 1
         },
 
