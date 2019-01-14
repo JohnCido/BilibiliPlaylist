@@ -1,11 +1,11 @@
 <template lang="pug">
 .bl-toolbar-stripe(v-show='fid !== undefined')
-    button.icon(title='缓存为列表' :class='isFIDCached ? "sync" : "fetch"' @click='save')
-    button.icon.play(title='顺序播放')
-    button.icon.shuffle(title='随机播放')
+    button.icon(:title='isFIDCached ? "刷新本地缓存" : "缓存为列表"' :class='isFIDCached ? "sync" : "fetch"' @click='save')
+    button.icon.play(v-show='isFIDCached' title='顺序播放' @click='play')
+    button.icon.shuffle(v-show='isFIDCached' title='随机播放' @click='shuffle')
     button.bl
 
-    .bl-processing-overlay(v-show='')
+    .bl-processing-overlay(v-show='processing')
 </template>
 
 <script lang="ts">
@@ -21,8 +21,13 @@ import {
 } from '../js/content-page/favorite.crawler'
 import CoreStore, {
     defaultDataStore,
-    IListModel
+    IListModel,
+    IVideoModel
 } from '../js/storage'
+import {
+    generateRepeatVideoURL,
+    generateShuffleVideoURL
+} from '../js/utils'
 const coreStore = new CoreStore()
 
 export default Vue.extend({
@@ -35,8 +40,14 @@ export default Vue.extend({
     },
 
     computed: {
+        list (): IListModel {
+            return this.store.lists[this.fid]
+        },
         isFIDCached (): boolean {
-            return this.store.lists[this.fid] !== undefined
+            return this.list !== undefined
+        },
+        vids (): IVideoModel[] {
+            return this.list.vids
         }
     },
 
@@ -54,6 +65,12 @@ export default Vue.extend({
                 this.processing = false
                 alert(reason)
             })
+        },
+        play () {
+            window.open(generateRepeatVideoURL(this.fid, this.vids))
+        },
+        shuffle () {
+            window.open(generateShuffleVideoURL(this.fid, this.vids))
         }
     },
 
