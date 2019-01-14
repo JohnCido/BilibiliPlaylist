@@ -9,6 +9,8 @@
     "description": "__MSG_description__",
     "icons": {
       "16": "./img/icons/icon_16.png",
+      "19": "./img/icons/icon_19.png",
+      "38": "./img/icons/icon_38.png",
       "48": "./img/icons/icon_48.png",
       "128": "./img/icons/icon_128.png"
     },

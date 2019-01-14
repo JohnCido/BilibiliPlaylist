@@ -12,12 +12,9 @@
   },
   "homepage": "https://github.com/JohnCido/BilibiliPlaylist#readme",
   "scripts": {
-    "init": "sudo npm i -g webpack npm-check-updates",
-    "update": "ncu -u",
-    "start": "cross-env NODE_ENV=development webpack --mode=development -w",
-    "production": "cross-env NODE_ENV=production webpack",
-    "archive": "node archive.js",
-    "distributeUnix": "rm -rf cache && rm -rf production && npm run production && cd production; zip -r -X upload.zip * && npm run archive",
+    "start": "webpack --env.NODE_ENV=development -w",
+    "production": "webpack --env.NODE_ENV=production",
+    "distributeUnix": "rm -rf production && npm run production && cd production; zip -r -X upload.zip *",
     "licensesJSON": "npm-license-crawler --onlyDirectDependencies --omitVersion --json ./licenses.json"
   },
   "keywords": [
