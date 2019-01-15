@@ -4,7 +4,6 @@ var CopyFilesPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
-const ChromeExtensionReloader = require('webpack-chrome-extension-reloader')
 
 module.exports = env => {
     const mode = env.NODE_ENV
@@ -20,7 +19,7 @@ module.exports = env => {
             popup: './src/js/popup.ts'
         },
         output: {
-            path: path.resolve(__dirname, `${mode}/`),
+            path: path.resolve(__dirname, 'webpackout/'),
             filename: '[name].js'
         },
 
@@ -96,11 +95,6 @@ module.exports = env => {
             }),
             new ExtractTextPlugin({ filename: '[name].css', disable: false, allChunks: true }),
             ...(dev ? [
-                new ChromeExtensionReloader({
-                    entries: {
-                        contentScript: [ 'favorite', 'video' ]
-                    }
-                })
             ] : [
                 new webpack.DefinePlugin({
                     'process.env': {

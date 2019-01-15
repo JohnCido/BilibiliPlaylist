@@ -13,6 +13,10 @@
   "homepage": "https://github.com/JohnCido/BilibiliPlaylist#readme",
   "scripts": {
     "start": "webpack --env.NODE_ENV=development -w",
+    "dev:chrome": "webextension-toolbox dev chrome -s webpackout -t development/[vendor]",
+    "dev:firefox": "webextension-toolbox dev firefox -s webpackout -t development/[vendor]",
+    "dev:opera": "webextension-toolbox dev opera -s webpackout -t development/[vendor]",
+    "dev:edge": "webextension-toolbox dev edge -s webpackout -t development/[vendor]",
     "production": "webpack --env.NODE_ENV=production",
     "distributeUnix": "rm -rf production && npm run production && cd production; zip -r -X upload.zip *",
     "licensesJSON": "npm-license-crawler --onlyDirectDependencies --omitVersion --json ./licenses.json"
@@ -55,6 +59,7 @@
     "puppeteer-core": "^1.11.0",
     "sass-loader": "^7.0.0",
     "source-map-loader": "^0.2.3",
+    "string-replace-loader": "^2.1.1",
     "style-loader": "^0.21.0",
     "terser-webpack-plugin": "^1.2.1",
     "ts-loader": "^5.3.2",
@@ -64,8 +69,8 @@
     "vue-loader": "^15.0.1",
     "vue-template-compiler": "^2.5.16",
     "web-ext": "^2.9.3",
+    "webextension-toolbox": "^3.0.0",
     "webpack": "^4.4.1",
-    "webpack-chrome-extension-reloader": "^1.1.1",
     "webpack-cli": "^3.0.0"
   },
   "dependencies": {
