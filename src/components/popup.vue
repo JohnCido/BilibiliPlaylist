@@ -2,7 +2,7 @@
 #app
     header
         .logo
-        button.icon(:class='headerIconClassNameA' @click='headerActionA' :disabled='isListEmpty')
+        button.icon(:class='headerIconClassNameA' @click='headerActionA' :disabled='isListEmpty && !showSettings')
         button.icon(:class='headerIconClassNameB' @click='headerActionB')
     #app-content
         #lists(:class='showSettings ? "slide-down" : ""')
@@ -14,9 +14,9 @@
                     button.icon.shuffle(v-show='!editing' @click='listItemActionA(list.id)')
                     button.icon(:class='listItemIconClassNameB' @click='listItemActionB(list.id)')
             .disable-scrim(v-show='showSettings' @click='showSettings = false')
-        #empty(v-show='isListEmpty')
-            span 看什么看，没有列表
-            button.add(@click='open("https://bilibili.com")')
+            #empty(v-show='isListEmpty')
+                span 看什么看，没有列表
+                button.add(@click='open("https://bilibili.com")')
         footer
             div
                 .cell.dark
