@@ -1,33 +1,22 @@
 import { browser } from 'webextension-polyfill-ts'
 import compareVersions from 'compare-versions'
 
-import amplitude from 'amplitude-js'
-import {
-    API_KEY,
-    EXT_INSTALL,
-    EXT_UPDATE
-} from './analytics.types'
-let amplitudeInstance = amplitude.getInstance()
-amplitudeInstance.init(API_KEY)
+import { AnalyticsBackgroundPage } from './analytics'
+const analytics = new AnalyticsBackgroundPage()
 
 browser.runtime.onInstalled.addListener(details => {
-    let reason = details.reason
-    let previousVersion = details.previousVersion
-    let version = browser.runtime.getManifest().version
+    const reason = details.reason
+    const previousVersion = details.previousVersion
+    const version = browser.runtime.getManifest().version
 
     switch (reason) {
     case 'install':
-        amplitudeInstance.logEvent(EXT_INSTALL, {
-            version: version
-        })
+        analytics.logInstall(version)
         break
 
     case 'update':
         if (previousVersion === version) break
-        amplitudeInstance.logEvent(EXT_UPDATE, {
-            previousVersion: previousVersion,
-            updatedTo: version
-        })
+        analytics.logUpdate(previousVersion, version)
         break
 
     default:

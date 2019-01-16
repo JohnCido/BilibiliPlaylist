@@ -42,12 +42,14 @@ import {
     generateRepeatVideoURL,
     generateShuffleVideoURL
 } from '../js/utils'
-import CoreStore, {
+
+import {
     defaultDataStore,
     IListModel,
     IVideoModel
 } from '../js/storage'
-const coreStore = new CoreStore()
+import { AnalyticsPopupPage } from '../js/analytics'
+const core = new AnalyticsPopupPage()
 
 export default Vue.extend({
     data () {
@@ -109,8 +111,9 @@ export default Vue.extend({
             switch (this.headerIconClassNameB) {
             case 'delete_all':
                 // Delete all lists
-                coreStore.removeAllLists()
+                core.removeAllLists()
                 this.editing = false
+                core.logDeleteAllLists()
                 break
             case 'arrow_up':
                 // Close settings
@@ -131,6 +134,7 @@ export default Vue.extend({
 
         listItemActionA (id: string | number) {
             // Shuffle play the list
+            core.logPlayAsShuffle()
             this.open(generateShuffleVideoURL(id, this.videosOfList(id)))
         },
 
@@ -138,10 +142,12 @@ export default Vue.extend({
             switch (this.listItemIconClassNameB) {
             case 'delete':
                 // Delete a single list
-                coreStore.removeList(id)
+                core.removeList(id)
+                core.logDeleteList()
                 break
             case 'play':
                 // Play the list
+                core.logPlayAsQueue()
                 this.open(generateRepeatVideoURL(id, this.videosOfList(id)))
                 break
             default:
@@ -150,7 +156,7 @@ export default Vue.extend({
         },
 
         toggleUsageSetting () {
-            coreStore.set('usage', !this.usage)
+            core.set('usage', !this.usage)
         },
 
         open (url: string) {
@@ -159,8 +165,8 @@ export default Vue.extend({
     },
 
     created () {
-        this.store = coreStore.store
-        coreStore.onChanged(store => this.store = store)
+        this.store = core.store
+        core.addStoreChangesListener(store => this.store = store)
     }
 })
 </script>

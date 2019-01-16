@@ -19,16 +19,18 @@ import {
 import {
     crawlList
 } from '../js/content-page/favorite.crawler'
-import CoreStore, {
-    defaultDataStore,
-    IListModel,
-    IVideoModel
-} from '../js/storage'
 import {
     generateRepeatVideoURL,
     generateShuffleVideoURL
 } from '../js/utils'
-const coreStore = new CoreStore()
+
+import { AnalyticsFavoritePage } from '../js/analytics'
+import {
+    defaultDataStore,
+    IListModel,
+    IVideoModel
+} from '../js/storage'
+const core = new AnalyticsFavoritePage()
 
 export default Vue.extend({
     data () {
@@ -58,8 +60,9 @@ export default Vue.extend({
         },
         save () {
             this.processing = true
+            this.isFIDCached ? core.logUpdateList() : core.logUpdateList()
             crawlList().then((list: IListModel) => {
-                coreStore.updateList(list)
+                core.updateList(list)
                 this.processing = false
             }).catch(reason => {
                 this.processing = false
@@ -67,16 +70,18 @@ export default Vue.extend({
             })
         },
         play () {
+            core.logPlayAsQueue()
             window.open(generateRepeatVideoURL(this.fid, this.vids))
         },
         shuffle () {
+            core.logPlayAsShuffle()
             window.open(generateShuffleVideoURL(this.fid, this.vids))
         }
     },
 
     created () {
-        this.store = coreStore.store
-        coreStore.onChanged(store => this.store = store)
+        this.store = core.store
+        core.addStoreChangesListener(store => this.store = store)
     },
 
     mounted () {

@@ -41,7 +41,7 @@ export default class CoreStore {
 
     set store (val) {
         this._store = val
-        for (let listener of this.listeners) listener(this.store)
+        if (this.listeners.length > 0) for (let listener of this.listeners) listener(this.store)
     }
 
     get store () {
@@ -74,7 +74,7 @@ export default class CoreStore {
      * Allow external code listens to the storage change
      * @param listener A function to receive changed store
      */
-    public onChanged (listener: (store: IDataStore) => void) {
+    public addStoreChangesListener (listener: (store: IDataStore) => void) {
         this.listeners.push(listener)
     }
 

@@ -7,7 +7,7 @@
             .length {{ video.length }}
     .footer
         .logo
-        button.text(@click='next' :title='nextVideoName')
+        button.text(@click='next(false)' :title='nextVideoName')
             span.list-name {{ list.name }}
             span.next-up {{ nextVideoName }}
         button.toggle-list(@click='expanded = !expanded')
@@ -21,18 +21,20 @@ import {
     shuffleVideos,
     intervalTest
 } from '../js/utils'
-import CoreStore, {
+import {
     defaultDataStore,
     IListModel,
     IVideoModel
 } from '../js/storage'
+import { AnalyticsVideoPage } from '../js/analytics'
+const core = new AnalyticsVideoPage()
+
 import {
     videoPageURLReg,
     videoSelector,
     videoPageDanmakuRowSelector,
-videoNotFoundNoticeSelector
+    videoNotFoundNoticeSelector
 } from '../js/strategy/video.strategy'
-const coreStore = new CoreStore()
 
 export default Vue.extend({
     data () {
@@ -95,18 +97,20 @@ export default Vue.extend({
             window.location.replace(url)
         },
 
-        next () {
+        next (auto = true) {
+            core.logPlayNextVideo(auto)
             this.open(this.nextVideoURL)
         },
 
         goto (av: string | number) {
+            core.logPlayAnotherVideo()
             this.open(generateVideoURL(this.listID, av, this.seed))
         }
     },
 
     created () {
-        this.store = coreStore.store
-        coreStore.onChanged(store => this.store = store)
+        this.store = core.store
+        core.addStoreChangesListener(store => this.store = store)
         this.validateURL()
     },
 
@@ -139,7 +143,7 @@ export default Vue.extend({
         // This video is gone, skip it
         intervalTest(
             () => $(videoNotFoundNoticeSelector)[0] !== undefined,
-        ).then(this.next).catch(() => { })
+        ).then(() => this.next()).catch(() => { })
     }
 })
 </script>

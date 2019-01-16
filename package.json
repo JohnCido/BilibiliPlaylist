@@ -74,7 +74,7 @@
     "webpack-cli": "^3.0.0"
   },
   "dependencies": {
-    "amplitude-js": "^4.1.1",
+    "amplitude-js": "4.5.2",
     "async": "^2.6.0",
     "cash-dom": "^3.0.0-beta.3",
     "compare-versions": "^3.1.0",

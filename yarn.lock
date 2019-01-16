@@ -1171,7 +1171,7 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplitude-js@^4.1.1:
+amplitude-js@4.5.2:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/amplitude-js/-/amplitude-js-4.5.2.tgz#17fd0f1c6a8a1afdbde1a36944dc9dbaa24805c1"
   integrity sha512-J075hRBuhCuBqwrhmuGIXg7zCLRO6TvONTJUESpTkM1LVL5bMcTx9BczW4Hh6p6kjBQjs2fD4rNbhPs48kYZwA==
