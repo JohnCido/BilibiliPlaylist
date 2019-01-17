@@ -8,7 +8,6 @@ class Base extends CoreStore {
         super()
         this.instance = Amplitude.getInstance()
         this.instance.init('f235621f75e162aa9ccc003c4ad00464')
-        console.log(this.instance)
         this.addStoreChangesListener(store => {
             this.instance.setOptOut(!(store.usage || false))
         })

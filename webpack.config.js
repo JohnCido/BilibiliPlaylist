@@ -26,11 +26,6 @@ module.exports = env => {
         module: {
             rules: [
                 {
-                    test: /\.js$/,
-                    exclude: /node_modules/,
-                    use: 'babel-loader'
-                },
-                {
                     test: /\.ts$/,
                     exclude: /node_modules/,
                     use: {
@@ -50,22 +45,6 @@ module.exports = env => {
                         fallback: 'style-loader'
                     })
                 },
-                // {
-                //     test: /\.scss$/,
-                //     use: ExtractTextPlugin.extract({
-                //         use: [
-                //             'css-loader',
-                //             {
-                //                 loader: 'sass-loader',
-                //                 options: {
-                //                     sourceMap: false,
-                //                     includePaths: [ './node_modules' ]
-                //                 }
-                //             }
-                //         ],
-                //         fallback: 'style-loader'
-                //     })
-                // },
                 {
                     test: /\.pug$/,
                     exclude: /node_modules/,

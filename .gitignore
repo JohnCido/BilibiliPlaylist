@@ -60,6 +60,7 @@ typings/
 # Develop and production folder
 development/
 production/
+packages/
 public/
 store/
 cache/
