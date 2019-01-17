@@ -1,7 +1,15 @@
 import { browser } from 'webextension-polyfill-ts'
 import compareVersions from 'compare-versions'
 
+import * as Sentry from '@sentry/browser'
+import { DSN } from './diagnostics'
+
 import { AnalyticsBackgroundPage } from './analytics'
+
+Sentry.init({
+    dsn: DSN
+})
+
 const analytics = new AnalyticsBackgroundPage()
 
 browser.runtime.onInstalled.addListener(details => {

@@ -19,7 +19,7 @@
     "dev:edge": "webextension-toolbox dev edge -s webpackout -t development/[vendor]",
     "production": "webpack --env.NODE_ENV=production",
     "distributeUnix": "rm -rf production && npm run production && cd production; zip -r -X upload.zip *",
-    "licensesJSON": "npm-license-crawler --onlyDirectDependencies --omitVersion --json ./licenses.json"
+    "licenses:json": "npm-license-crawler --onlyDirectDependencies --omitVersion --json ./licenses.json"
   },
   "keywords": [
     "chrome",
@@ -74,14 +74,11 @@
     "webpack-cli": "^3.0.0"
   },
   "dependencies": {
+    "@sentry/browser": "^4.5.2",
     "amplitude-js": "4.5.2",
     "async": "^2.6.0",
     "cash-dom": "^3.0.0-beta.3",
     "compare-versions": "^3.1.0",
-    "material-design-icons": "^3.0.1",
-    "md5": "^2.2.1",
-    "randomstring": "^1.1.5",
-    "raven-js": "^3.24.0",
     "seededshuffle": "^0.2.0",
     "vue": "^2.5.16",
     "webextension-polyfill-ts": "^0.8.9"

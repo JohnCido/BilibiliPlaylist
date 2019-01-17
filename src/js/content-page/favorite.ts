@@ -9,6 +9,13 @@ import {
 import toolbar from '../../components/favorite.toolbar.vue'
 import { intervalTest } from '../utils'
 
+import * as Sentry from '@sentry/browser'
+import { DSN } from '../diagnostics'
+Sentry.init({
+    dsn: DSN,
+    integrations: [new Sentry.Integrations.Vue({ Vue })]
+})
+
 init()
 
 initRefreshNavTriggerSelectors.map(selector => intervalTest(() => {
