@@ -29,7 +29,8 @@ module.exports = env => {
                     test: /\.js$/,
                     exclude: /node_modules/,
                     use: 'babel-loader'
-                }, {
+                },
+                {
                     test: /\.ts$/,
                     exclude: /node_modules/,
                     use: {
@@ -38,7 +39,8 @@ module.exports = env => {
                             appendTsSuffixTo: [/\.vue$/]
                         }
                     }
-                }, {
+                },
+                {
                     test: /\.less$/,
                     use: ExtractTextPlugin.extract({
                         use: [
@@ -47,30 +49,34 @@ module.exports = env => {
                         ],
                         fallback: 'style-loader'
                     })
-                }, {
-                    test: /\.scss$/,
-                    use: ExtractTextPlugin.extract({
-                        use: [
-                            'css-loader',
-                            {
-                                loader: 'sass-loader',
-                                options: {
-                                    sourceMap: false,
-                                    includePaths: [ './node_modules' ]
-                                }
-                            }
-                        ],
-                        fallback: 'style-loader'
-                    })
-                }, {
+                },
+                // {
+                //     test: /\.scss$/,
+                //     use: ExtractTextPlugin.extract({
+                //         use: [
+                //             'css-loader',
+                //             {
+                //                 loader: 'sass-loader',
+                //                 options: {
+                //                     sourceMap: false,
+                //                     includePaths: [ './node_modules' ]
+                //                 }
+                //             }
+                //         ],
+                //         fallback: 'style-loader'
+                //     })
+                // },
+                {
                     test: /\.pug$/,
                     exclude: /node_modules/,
                     use: 'pug-plain-loader'
-                }, {
+                },
+                {
                     test: /\.vue$/,
                     exclude: /node_modules/,
                     use: 'vue-loader'
-                }, {
+                },
+                {
                     test: /\.(png|jpg|jpeg|woff|woff2|eot|ttf|svg)$/,
                     use: 'url-loader'
                 }
