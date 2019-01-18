@@ -7,7 +7,7 @@ const extensions = ['.js', '.ts', '.json', '.less', '.vue']
 
 module.exports = {
     webpack: (config, { dev, vendor }) => {
-        config.devtool = dev ? 'eval-source-map' : 'nosources-source-map'
+        config.devtool = dev ? 'inline-source-map' : ''
         config.entry = {
             background: './js/main.ts',
             favorite: './js/content-page/favorite.ts',
