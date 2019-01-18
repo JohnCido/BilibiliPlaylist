@@ -11,8 +11,8 @@
                     .text
                         .title {{ list.name }}
                         .subtitle {{ list.private ? '私人' : '公开' }} · {{ list.vids.length }} 个视频
-                    button.icon.shuffle(v-show='!editing' @click='listItemActionA(list.id)' title='随机播放该列表')
-                    button.icon(:class='listItemIconClassNameB' @click.exact='listItemActionB(list.id)' @click.alt.exact='listItemActionB(list.id, true)' title='顺序播放，按住 Alt 键单击来倒序播放')
+                    button.icon.shuffle(v-show='!editing' @click='listItemActionA(list.id)' title='随机播放')
+                    button.icon(:class='listItemIconClassNameB' @click.exact='listItemActionB(list.id)' @click.alt.exact='listItemActionB(list.id, true)' :title='editing ? "删除列表" : "顺序播放，按住 Alt 键单击来倒序播放"')
             .disable-scrim(v-show='showSettings' @click='showSettings = false')
             #empty(v-show='isListEmpty')
                 span 看什么看，没有列表
@@ -27,7 +27,7 @@
                 .cell.dark
                     .text
                         .title 开放源代码许可
-                    button.icon.open_in_new
+                    button.icon.open_in_new(@click='open("https://github.com/JohnCido/BilibiliPlaylist/blob/master/licenses.json")')
                 .cell.dark
                     .text
                         .title 我的 B 站空间
@@ -97,6 +97,7 @@ export default Vue.extend({
                 break
             case 'heart':
                 // Show Chrome Web Store rate page
+                this.open('https://chrome.google.com/webstore/detail/odahjnmjnhojohklinapjaokgaccfaba/reviews')
                 break
             case 'edit':
                 // Start editing
@@ -142,6 +143,7 @@ export default Vue.extend({
             switch (this.listItemIconClassNameB) {
             case 'delete':
                 // Delete a single list
+                if (this.lists.length === 1) this.editing = false
                 core.removeList(id)
                 core.logDeleteList()
                 break

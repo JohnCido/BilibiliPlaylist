@@ -15,12 +15,9 @@
     "dev:chrome": "webextension-toolbox dev chrome -s src -t development/[vendor]",
     "dev:firefox": "webextension-toolbox dev firefox -s src -t development/[vendor]",
     "dev:opera": "webextension-toolbox dev opera -s src -t development/[vendor]",
-    "dev:edge": "webextension-toolbox dev edge -s src -t development/[vendor]",
     "prod:chrome": "webextension-toolbox build chrome -s src -t production/[vendor]",
     "prod:firefox": "webextension-toolbox build firefox -s src -t production/[vendor]",
     "prod:opera": "webextension-toolbox build opera -s src -t production/[vendor]",
-    "prod:edge": "webextension-toolbox build edge -s src -t production/[vendor]",
-    "distributeUnix": "rm -rf production && npm run production && cd production; zip -r -X upload.zip *",
     "licenses:json": "npm-license-crawler --onlyDirectDependencies --omitVersion --json ./licenses.json"
   },
   "keywords": [
