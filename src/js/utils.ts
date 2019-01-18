@@ -39,7 +39,7 @@ export function intervalTest (test: () => boolean, delay = 0, interval = 50, tim
  * @param av ID of video
  * @param shuffle Whether it's in shuffle mode
  */
-export function generateVideoURL (id: string | number, av: string | number, seed = '0') {
+export function generateVideoURL (id: string | number, av: string | number, seed = '1') {
     return `${videoPageBaseURL}av${av}/?bpid=${id}&seed=${seed}`
 }
 
@@ -64,8 +64,14 @@ export function randomString (length = 5) {
  * @param seed
  */
 export function shuffleVideos (vids: IVideoModel[], seed: string): IVideoModel[] {
-    if (seed === '0') return vids
-    return seededShuffle.shuffle(vids, seed)
+    switch (seed) {
+    case '1':
+        return vids
+    case '-1':
+        return vids.reverse()
+    default:
+        return seededShuffle.shuffle(vids, seed)
+    }
 }
 
 /**
@@ -73,9 +79,9 @@ export function shuffleVideos (vids: IVideoModel[], seed: string): IVideoModel[]
  * @param id Play list ID
  * @param vids Videos list
  */
-export function generateShuffleVideoURL (id: string | number, vids: IVideoModel[]) {
-    const seed = randomString()
-    return generateVideoURL(id, shuffleVideos(vids, seed)[0].av, seed)
+export function generateShuffleVideoURL (id: string | number, vids: IVideoModel[], seed?: string) {
+    const _seed = seed !== undefined ? seed : randomString()
+    return generateVideoURL(id, shuffleVideos(vids, _seed)[0].av, _seed)
 }
 
 /**
@@ -83,6 +89,6 @@ export function generateShuffleVideoURL (id: string | number, vids: IVideoModel[
  * @param id Play list ID
  * @param vids Videos list
  */
-export function generateRepeatVideoURL (id: string | number, vids: IVideoModel[]) {
-    return generateVideoURL(id, vids[0].av)
+export function generateQueuedVideoURL (id: string | number, vids: IVideoModel[], reverse = false) {
+    return generateShuffleVideoURL(id, vids, reverse ? '-1' : '1')
 }

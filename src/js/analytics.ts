@@ -67,8 +67,8 @@ class ListPlayer extends FrontPage {
     /**
      * User started play a list as normal queue
      */
-    public logPlayAsQueue () {
-        this.logWithSource('PLAY_QUEUE')
+    public logPlayAsQueue (reverse = false) {
+        this.logWithSource('PLAY_QUEUE', { reverse })
     }
 
     /**

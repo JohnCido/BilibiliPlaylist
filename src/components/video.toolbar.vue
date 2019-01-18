@@ -43,7 +43,7 @@ export default Vue.extend({
             valid: false,
             av: 0,
             listID: '',
-            seed: '0',
+            seed: '1',
             expanded: false
         }
     },
@@ -87,7 +87,7 @@ export default Vue.extend({
             const url = document.URL
             this.valid = videoPageURLReg.test(url)
             if (!this.valid) return
-            const [_ = '', av = '0', listID = '', seed = '0'] = videoPageURLReg.exec(url) || []
+            const [_ = '', av = '0', listID = '', seed = '1'] = videoPageURLReg.exec(url) || []
             this.av = parseInt(av)
             this.listID = listID
             this.seed = seed

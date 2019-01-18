@@ -11,8 +11,8 @@
                     .text
                         .title {{ list.name }}
                         .subtitle {{ list.private ? '私人' : '公开' }} · {{ list.vids.length }} 个视频
-                    button.icon.shuffle(v-show='!editing' @click='listItemActionA(list.id)')
-                    button.icon(:class='listItemIconClassNameB' @click='listItemActionB(list.id)')
+                    button.icon.shuffle(v-show='!editing' @click='listItemActionA(list.id)' title='随机播放该列表')
+                    button.icon(:class='listItemIconClassNameB' @click.exact='listItemActionB(list.id)' @click.alt.exact='listItemActionB(list.id, true)' title='顺序播放，按住 Alt 键单击来倒序播放')
             .disable-scrim(v-show='showSettings' @click='showSettings = false')
             #empty(v-show='isListEmpty')
                 span 看什么看，没有列表
@@ -39,7 +39,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import {
-    generateRepeatVideoURL,
+    generateQueuedVideoURL,
     generateShuffleVideoURL
 } from '../js/utils'
 
@@ -138,7 +138,7 @@ export default Vue.extend({
             this.open(generateShuffleVideoURL(id, this.videosOfList(id)))
         },
 
-        listItemActionB (id: string | number) {
+        listItemActionB (id: string | number, reverse = false) {
             switch (this.listItemIconClassNameB) {
             case 'delete':
                 // Delete a single list
@@ -147,8 +147,8 @@ export default Vue.extend({
                 break
             case 'play':
                 // Play the list
-                core.logPlayAsQueue()
-                this.open(generateRepeatVideoURL(id, this.videosOfList(id)))
+                core.logPlayAsQueue(reverse)
+                this.open(generateQueuedVideoURL(id, this.videosOfList(id), reverse))
                 break
             default:
                 break

@@ -20,7 +20,7 @@ import {
     crawlList
 } from '../js/content-page/favorite.crawler'
 import {
-    generateRepeatVideoURL,
+    generateQueuedVideoURL,
     generateShuffleVideoURL
 } from '../js/utils'
 
@@ -71,7 +71,7 @@ export default Vue.extend({
         },
         play () {
             core.logPlayAsQueue()
-            window.open(generateRepeatVideoURL(this.fid, this.vids))
+            window.open(generateQueuedVideoURL(this.fid, this.vids))
         },
         shuffle () {
             core.logPlayAsShuffle()
