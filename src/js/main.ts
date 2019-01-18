@@ -35,4 +35,16 @@ browser.runtime.onInstalled.addListener(details => {
     if (compareVersions(version, '1.1.10') > 0 && compareVersions(previousVersion || '0.0.0', '1.1.10') <= 0) {
         browser.storage.local.set({ 'usage': true })
     }
+
+    // Transfer storage for < v2.x
+    if (compareVersions(previousVersion || '0.0.0', '2.0.0') < 0) {
+        browser.storage.local.get(null).then(storage => browser.storage.local.clear().then(() => {
+            let lists = { ...storage }
+            delete lists.usage
+            browser.storage.local.set({
+                usage: storage.usage || true,
+                lists
+            })
+        }))
+    }
 })
