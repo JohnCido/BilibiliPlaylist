@@ -1,9 +1,14 @@
-// const webpack = require('webpack')
+const webpack = require('webpack')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 
 const extensions = ['.js', '.ts', '.json', '.less', '.vue']
+
+const rateExtensionURLs = {
+    chrome: 'https://chrome.google.com/webstore/detail/odahjnmjnhojohklinapjaokgaccfaba/reviews',
+    firefox: 'https://addons.mozilla.org/firefox/addon/bilist/'
+}
 
 module.exports = {
     webpack: (config, { dev, vendor }) => {
@@ -61,7 +66,10 @@ module.exports = {
         config.resolve.extensions = extensions
         config.plugins.push(
             new VueLoaderPlugin(),
-            new ExtractTextPlugin({ filename: '[name].css', disable: false, allChunks: true })
+            new ExtractTextPlugin({ filename: '[name].css', disable: false, allChunks: true }),
+            new webpack.DefinePlugin({
+                $$RATE_EXT$$: JSON.stringify(rateExtensionURLs[vendor])
+            })
         )
 
         config.optimization = {

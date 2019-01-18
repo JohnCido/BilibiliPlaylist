@@ -6,6 +6,9 @@ module.exports = {
         es6: true,
         node: true
     },
+    globals: {
+        '$$RATE_EXT$$': true
+    },
     extends: 'standard',
     parser: 'typescript-eslint-parser',
     parserOptions: {

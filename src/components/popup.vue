@@ -97,7 +97,7 @@ export default Vue.extend({
                 break
             case 'heart':
                 // Show Chrome Web Store rate page
-                this.open('https://chrome.google.com/webstore/detail/odahjnmjnhojohklinapjaokgaccfaba/reviews')
+                this.open($$RATE_EXT$$)
                 break
             case 'edit':
                 // Start editing
