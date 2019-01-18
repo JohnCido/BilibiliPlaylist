@@ -1,0 +1,28 @@
+.flex-w(@s) {
+    width: @s;
+    min-width: @s;
+    max-width: @s;
+}
+
+.flex-h(@s) {
+    height: @s;
+    min-height: @s;
+    max-height: @s;
+}
+
+.flex-size(@w, @h) {
+    .flex-w(@w);
+    .flex-h(@h);
+}
+
+.absolute-size(@t, @r, @b, @l) {
+    position: absolute;
+    top: @t;
+    right: @r;
+    bottom: @b;
+    left: @l;
+}
+
+.absolute-full {
+    .absolute-size(0, 0, 0, 0);
+}

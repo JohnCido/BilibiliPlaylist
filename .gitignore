@@ -58,8 +58,10 @@ typings/
 .env
 
 # Develop and production folder
-develop/
+development/
 production/
+packages/
 public/
 store/
 cache/
+webpackout/

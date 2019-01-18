@@ -2,42 +2,53 @@
     "manifest_version": 2,
     "name": "__MSG_name__",
     "short_name": "__MSG_shortName__",
-    "version": "1.2.15",
+    "version": "2.0.0",
     "minimum_chrome_version": "52",
 
     "default_locale": "zh_CN",
     "description": "__MSG_description__",
     "icons": {
       "16": "./img/icons/icon_16.png",
+      "19": "./img/icons/icon_19.png",
+      "38": "./img/icons/icon_38.png",
       "48": "./img/icons/icon_48.png",
       "128": "./img/icons/icon_128.png"
     },
     
     "background": {
         "scripts": [
-            "./main.js"
-        ],
-        "persistent": false
+            "./background.js"
+        ]
     },
 
     "content_scripts": [
         {
-            "run_at": "document_end",
+            "run_at": "document_idle",
             "matches": ["*://space.bilibili.com/*"],
             "js": [
                 "./favorite.js"
+            ],
+            "css": [
+                "./favorite.css"
             ]
         },
         {
-            "run_at": "document_end",
+            "run_at": "document_idle",
             "matches": ["*://www.bilibili.com/video/*"],
             "js": [
                 "./video.js"
+            ],
+            "css": [
+                "./video.css"
             ]
         }
     ],
 
     "browser_action": {
+        "default_icon": {
+            "19": "./img/icons/icon_19.png",
+            "38": "./img/icons/icon_38.png"
+        },
         "default_title": "__MSG_shortName__",
         "default_popup": "./popup.html"
     },
@@ -45,7 +56,6 @@
     "permissions": [
         "tabs",
         "activeTab",
-        "declarativeContent",
         "storage"
     ],
 

@@ -1,256 +1,408 @@
 <template lang="pug">
-mdc-layout-app
-    mdc-toolbar(slot="toolbar")
-        mdc-toolbar-row
-            mdc-toolbar-section(align-start)
-                mdc-toolbar-title 哔哩列表
-            mdc-toolbar-section(align-end)
-                mdc-toolbar-icon(:icon="editing ? 'delete_forever' : 'edit'" @click='action1' v-show="lists.length !== 0")
-                mdc-toolbar-icon(:icon="editing ? 'check' : 'settings'" @click='action2')
+#app
+    header
+        .logo
+        button.icon(:class='headerIconClassNameA' @click='headerActionA' :disabled='isListEmpty && !showSettings')
+        button.icon(:class='headerIconClassNameB' @click='headerActionB')
+    #app-content
+        #lists(:class='showSettings ? "slide-down" : ""')
+            .list
+                .cell(v-for='list in lists' :key='list.id')
+                    .text
+                        .title {{ list.name }}
+                        .subtitle {{ list.private ? '私人' : '公开' }} · {{ list.vids.length }} 个视频
+                    button.icon.shuffle(v-show='!editing' @click='listItemActionA(list.id)' title='随机播放')
+                    button.icon(:class='listItemIconClassNameB' @click.exact='listItemActionB(list.id)' @click.alt.exact='listItemActionB(list.id, true)' :title='editing ? "删除列表" : "顺序播放，按住 Alt 键单击来倒序播放"')
+            .disable-scrim(v-show='showSettings' @click='showSettings = false')
+            #empty(v-show='isListEmpty')
+                span 看什么看，没有列表
+                button.add(@click='open("https://bilibili.com")')
+        footer
+            div
+                .cell.dark
+                    .text
+                        .title 发送匿名使用统计
+                        .subtitle 协助统计功能使用情况
+                    button.icon(:class='usage ? "check_circle_fill" : "circle"' @click='toggleUsageSetting')
+                .cell.dark
+                    .text
+                        .title 开放源代码许可
+                    button.icon.open_in_new(@click='open("https://github.com/JohnCido/BilibiliPlaylist/blob/master/licenses.json")')
+                .cell.dark
+                    .text
+                        .title 我的 B 站空间
+                    button.icon.open_in_new(@click='open("https://space.bilibili.com/1528379")')
 
-    main
-        section(class="lists")
-            div(class="empty" v-if="lists.length === 0")
-                div(class="content")
-                    div(class="face")
-                    mdc-body 看什么看，没有列表
-                    mdc-button(@click="open('https://www.bilibili.com')") 打开 B 站
-            mdc-list(v-for="(list, index) in lists" :key="index" dense two-line class="list")
-                mdc-list-item
-                    span {{ list.name }}
-                    span(slot="secondary") {{ `${list.priv ? '私人' : '公开'} · ${list.vids.length}个视频` }}
-                    span(slot="end-detail")
-                        mdc-button(icon shuffle v-if="!editing" @click="shuffle(`${list.id}`)")
-                            mdc-icon(icon="shuffle")
-                        mdc-button(icon action @click="itemAction(`${list.id}`)")
-                            mdc-icon(:icon="editing ? 'delete' : 'play_arrow'")
-    
-    settings(ref="settings")
-
-    mdc-dialog(ref="dialogClear" title="确定要删除所有列表？" accept="清除" @accept="clear" cancel="取消") 请注意此操作不可撤销
+            .copyright 版权所有 © 2019 John Cido.<br/>保留所有你能想到或者想不到的解释权。
 </template>
 
-<script>
-import Amplitude from 'amplitude-js'
-import * as amplitudeTypes from '../js/analytics.types'
-let amplitudeInstance = Amplitude.getInstance()
-amplitudeInstance.init(amplitudeTypes.API_KEY)
+<script lang="ts">
+import Vue from 'vue'
+import {
+    generateQueuedVideoURL,
+    generateShuffleVideoURL
+} from '../js/utils'
 
-import Settings from './settings'
-import randomString from 'randomstring'
-import series from 'async/series'
-import util from '../js/util'
+import {
+    defaultDataStore,
+    IListModel,
+    IVideoModel
+} from '../js/storage'
+import { AnalyticsPopupPage } from '../js/analytics'
+const core = new AnalyticsPopupPage()
 
-export default {
+export default Vue.extend({
     data () {
         return {
-            lists: [],
-            editing: false
+            store: defaultDataStore,
+            fid: '0',
+            processing: false,
+            editing: false,
+            showSettings: false
         }
     },
-    methods: {
-        action1 () {
-            if (this.editing) {
-                //Delete all
-                this.$refs.dialogClear.show()
-            } else {
-                //Edit
-                this.editing = true
-            }
-        },
-        action2 () {
-            if (this.editing) {
-                //Done
-                this.editing = false
-            } else {
-                //Settings
-                this.$refs.settings.show()
-            }
-        },
-        clear() {
-            let self = this
-            var usage
 
-            series([
-                cb => {
-                    chrome.storage.local.get('usage', obj => {
-                        usage = obj.usage
-                        cb()
-                    })
-                },
-                cb => {
-                    chrome.storage.local.clear(() => {
-                        amplitudeInstance.logEvent(amplitudeTypes.PLAYLIST_DELETE_ALL, {
-                            from: 'popup'
-                        })
-                        self.editing = false
-                        self.lists = []
-                        cb()
-                    })
-                },
-                cb => {
-                    chrome.storage.local.set({ usage: usage })
-                }
-            ])
+    computed: {
+        lists (): IListModel[] {
+            return Object.values(this.store.lists)
         },
-        shuffle(id) {
-            amplitudeInstance.logEvent(amplitudeTypes.PLAY_SHUFFLE, {
-                from: 'favorite'
-            })
-            open(id, true)
+
+        isListEmpty (): boolean {
+            return this.lists.length === 0
         },
-        itemAction(id) {
-            let self = this
-            if (this.editing) {
-                //Delete
-                chrome.storage.local.remove(id, () => {
-                    amplitudeInstance.logEvent(amplitudeTypes.PLAYLIST_DELETE, {
-                        from: 'popup'
-                    })
-                    self.load()
-                })
-            } else {
-                //Play
-                amplitudeInstance.logEvent(amplitudeTypes.PLAY_QUEUE, {
-                    from: 'favorite'
-                })
-                open(id, false)
+
+        headerIconClassNameA (): string {
+            return this.editing ? 'check' : this.showSettings ? 'heart' : 'edit'
+        },
+
+        headerIconClassNameB (): string {
+            return this.editing ? 'delete_all' : this.showSettings ? 'arrow_up' : 'settings'
+        },
+
+        listItemIconClassNameB (): string {
+            return this.editing ? 'delete' : 'play'
+        },
+
+        usage (): boolean {
+            return this.store.usage
+        }
+    },
+
+    methods: {
+        headerActionA () {
+            switch (this.headerIconClassNameA) {
+            case 'check':
+                // Done editing
+                this.editing = false
+                break
+            case 'heart':
+                // Show Chrome Web Store rate page
+                this.open('https://chrome.google.com/webstore/detail/odahjnmjnhojohklinapjaokgaccfaba/reviews')
+                break
+            case 'edit':
+                // Start editing
+                this.editing = true
+                break
+            default:
+                break
             }
         },
-        load() {
-            let self = this
-            chrome.storage.local.get(null, local => {
-                delete local.usage
-                self.lists = Object.values(local)
-            })
+
+        headerActionB () {
+            switch (this.headerIconClassNameB) {
+            case 'delete_all':
+                // Delete all lists
+                core.removeAllLists()
+                this.editing = false
+                core.logDeleteAllLists()
+                break
+            case 'arrow_up':
+                // Close settings
+                this.showSettings = false
+                break
+            case 'settings':
+                // Show settings
+                this.showSettings = true
+                break
+            default:
+                break
+            }
         },
-        open(url) {
+
+        videosOfList (id: string | number): IVideoModel[] {
+            return this.store.lists[id].vids
+        },
+
+        listItemActionA (id: string | number) {
+            // Shuffle play the list
+            core.logPlayAsShuffle()
+            this.open(generateShuffleVideoURL(id, this.videosOfList(id)))
+        },
+
+        listItemActionB (id: string | number, reverse = false) {
+            switch (this.listItemIconClassNameB) {
+            case 'delete':
+                // Delete a single list
+                if (this.lists.length === 1) this.editing = false
+                core.removeList(id)
+                core.logDeleteList()
+                break
+            case 'play':
+                // Play the list
+                core.logPlayAsQueue(reverse)
+                this.open(generateQueuedVideoURL(id, this.videosOfList(id), reverse))
+                break
+            default:
+                break
+            }
+        },
+
+        toggleUsageSetting () {
+            core.set('usage', !this.usage)
+        },
+
+        open (url: string) {
             window.open(url)
         }
     },
-    created () {
-        this.load()
-    },
-    components: {
-        Settings
-    }
-}
 
-function open(id, shuffle) {
-    chrome.storage.local.get(id, (obj) => {
-        var list = obj[id], url
-        if (shuffle) {
-            let seed = randomString.generate(5)
-            util.shuffle(list.vids, seed)
-            url = `https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}&seed=${seed}`
-        } else {
-            url = `https://www.bilibili.com/video/av${list.vids[0].av}/?bpid=${id}&seed=0`
-        }
-        window.open(url)
-    })
-}
+    created () {
+        this.store = core.store
+        core.addStoreChangesListener(store => this.store = store)
+    }
+})
 </script>
 
-<style lang="less" scoped>
-@import url('../css/basic.less');
+<style lang="less">
+@import url('../css/universal.less');
+@import url('../css/tokens.less');
+@import url('../css/utils.less');
 
-.mdc-layout-app {
-    z-index: 1;
-}
-
-.mdc-layout-app--toolbar-wrapper {
-    min-height: 56px;
-
-    .mdc-toolbar-title {
-        color: white;
-    }
-
-    .mdc-toolbar-icon {
-        color: white;
-
-        &::before {
-            background-color: fade(white, 40);
-        }
-
-        &::after {
-            background-color: fade(white, 40);
-        }
-    }
-}
-
-main {
-    height: 100%; max-height: 344px;
-}
-
-.lists {
-    width: 100%; height: 100%;
+* {
     position: relative;
+    box-sizing: border-box;
+}
+
+button, a {
+    cursor: pointer;
+}
+
+#app {
+    width: inherit;
+    height: inherit;
+    overflow: hidden;
+    background-color: @azure;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    #app-content {
+        height: 100%;
+    }
+}
+
+header {
+    .flex-h(48px);
+    padding: 0 10px 0 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    .logo {
+        width: 100%;
+        .flex-h(24px);
+        background-image: url('../img/popup/header_logo.svg');
+        background-repeat: no-repeat;
+        background-position: left center;
+    }
+}
+
+#lists {
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
     overflow-y: auto;
+    padding-top: 4px;
+    border-radius: 4px 4px 0 0;
+    background-color: @white;
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+    transition: all ease-out .22s;
 
-    .empty {
-        width: 100%; height: 100%;
-        position: absolute;
-        z-index: 2;
-
-        .content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex; flex-direction: column;
-            align-items: center;
-
-            .face {
-                width: 72px; height: 72px;
-                border-radius: 8px 36px 36px 36px;
-                box-shadow: inset 0 0 0 2px @blue;
-                background-image: url('../img/popup/face/1@2x.jpg');
-                background-position: center; background-repeat: no-repeat; background-size: contain;
-            }
-
-            .mdc-body {
-                margin-top: 12px;
-            }
-
-            .mdc-button {
-                &::before {
-                    background-color: fade(@blue, 24);
-                }
-
-                &::after {
-                    background-color: fade(@blue, 24);
-                }
-            }
-        }
+    &.slide-down {
+        transform: translateY(220px);
     }
 
     .list {
-        .mdc-list-item {
-            padding-right: 4px;
+        z-index: 1;
+    }
+
+    .disable-scrim {
+        .absolute-full;
+        background-color: @white-disabled;
+        cursor: pointer;
+        z-index: 2;
+    }
+}
+
+button.icon {
+    .flex-w(30px);
+    min-height: 32px;
+    background-repeat: no-repeat;
+    background-position: center;
+    float: left;
+
+    &.settings {
+        background-image: url('../img/popup/settings.svg');
+    }
+
+    &.delete_all {
+        background-image: url('../img/popup/delete_all.svg');
+    }
+
+    &.arrow_up {
+        background-image: url('../img/popup/arrow_up.svg');
+    }
+
+    &.edit {
+        background-image: url('../img/popup/edit.svg');
+    }
+
+    &.check {
+        background-image: url('../img/popup/check.svg');
+    }
+
+    &.heart {
+        background-image: url('../img/popup/heart.svg');
+    }
+
+    &.shuffle {
+        background-image: url('../img/popup/shuffle.svg');
+    }
+
+    &.play {
+        background-image: url('../img/popup/play.svg');
+    }
+
+    &.delete {
+        background-image: url('../img/popup/delete.svg');
+    }
+
+    &.circle {
+        background-image: url('../img/popup/circle.svg');
+    }
+
+    &.check_circle_fill {
+        background-image: url('../img/popup/check_circle_fill.svg');
+    }
+
+    &.open_in_new {
+        background-image: url('../img/popup/open_in_new.svg');
+    }
+
+
+    &:disabled {
+        opacity: .32;
+        cursor: not-allowed;
+    }
+}
+
+.cell {
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 10px 10px 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow: hidden;
+
+    .text {
+        width: 100%;
+        color: @black;
+        overflow: hidden;
+
+        .title {
+            font-size: 12px;
+            color: inherit;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        &:hover {
-            .mdc-button {
-                &[shuffle] {
-                    opacity: 1;
-                }
+        .subtitle {
+            font-size: 11px;
+            color: inherit;
+            opacity: .36;
+        }
+    }
 
-                &::before {
-                    background-color: fade(@blue, 24);
-                }
+    &::after {
+        content: '';
+        display: block;
+        .absolute-size(unset, 0, 0, 16px);
+        height: 1px;
+        background-color: @azure-divider;
+    }
 
-                &::after {
-                    background-color: fade(@blue, 24);
-                }
+    &.dark {
+        .text {
+            color: @white;
+
+            .subtitle {
+                opacity: .52;
             }
         }
 
-        .mdc-button {
-            &[shuffle] {
-                opacity: 0;
-                transition: opacity ease 0.07s;
-            }
+        &::after {
+            background-color: @white-divider;
         }
+    }
+
+    &:last-child {
+        &::after {
+            display: none;
+        }
+    }
+}
+
+#empty {
+    .absolute-full;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+
+    span {
+        font-size: 12px;
+        text-align: center;
+        color: @black;
+    }
+
+    .add {
+        display: block;
+        width: 48px;
+        height: 48px;
+        margin-top: 16px;
+        border-radius: 50%;
+        background-image: url('../img/popup/add.svg');
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: fade(@azure, 4);
+        box-shadow: 0 0 0 8px fade(@azure, 4);
+    }
+}
+
+footer {
+    .absolute-full;
+    z-index: 1;
+
+    .copyright {
+        text-align: center;
+        font-size: 10px;
+        color: @white-disabled;
+        margin-top: 12px;
     }
 }
 </style>
