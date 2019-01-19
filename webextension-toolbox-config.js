@@ -94,5 +94,5 @@ module.exports = {
 
         return config
     },
-    copyIgnore: extensions.map(extension => `**/*${extension}`)
+    copyIgnore: [ ...extensions, '.svg' ].map(extension => `**/*${extension}`)
 }

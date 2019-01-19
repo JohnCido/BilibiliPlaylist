@@ -1,5 +1,10 @@
 <template lang="pug">
-.bl-video-toolbar(v-show='valid' :class='expanded ? "expanded" : ""')
+.bl-video-toolbar(
+    v-show='valid'
+    :class='expanded ? "expanded" : ""'
+    @mouseenter='expanded = true'
+    @mouseleave='expanded = false'
+)
     .list
         button.item(v-for='(video, index) in videos' :key='index' :class='video.av === av ? "active" : ""' @click='goto(video.av)')
             .index {{ index + 1 }}
@@ -10,7 +15,6 @@
         button.text(@click='next(false)' :title='nextVideoName')
             span.list-name {{ list.name }}
             span.next-up {{ nextVideoName }}
-        button.toggle-list(@click='expanded = !expanded')
 </template>
 
 <script lang="ts">
@@ -163,7 +167,10 @@ export default Vue.extend({
     width: @barw;
     height: 48px;
     position: fixed;
+    right: 0;
     bottom: 0;
+    left: 0;
+    margin: auto;
     border-radius: 4px 4px 0 0;
     background-color: @white;
     box-shadow: 0 0 0 1px @azure-divider;
@@ -206,7 +213,7 @@ export default Vue.extend({
             width: 100%;
             height: 100%;
             margin-left: 16px;
-            padding-right: 12px;
+            padding-right: 16px;
             text-align: left;
             overflow: hidden;
 
@@ -217,13 +224,15 @@ export default Vue.extend({
             .list-name {
                 width: 100%;
                 font-size: 10px;
+                line-height: 16px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
             }
 
             .next-up {
-                font-size: 12px;
+                font-size: 10px;
+                line-height: 16px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -234,14 +243,6 @@ export default Vue.extend({
                     color: @black-secondary;
                 }
             }
-        }
-
-        .toggle-list {
-            .flex-w(50px);
-            height: 100%;
-            background-image: url('../img/content-page/list.svg');
-            background-repeat: no-repeat;
-            background-position: center;
         }
     }
 
@@ -293,11 +294,22 @@ export default Vue.extend({
             }
 
             &.active {
+                pointer-events: none;
+                cursor: default;
+
                 .index {
                     color: transparent;
                     background-image: url('../img/content-page/play.svg');
                     background-position: center;
                     background-repeat: no-repeat;
+                }
+
+                .name {
+                    color: @azure;
+                }
+
+                .length {
+                    color: @azure;
                 }
             }
         }
