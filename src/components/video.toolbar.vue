@@ -37,7 +37,8 @@ import {
     videoPageURLReg,
     videoSelector,
     videoPageDanmakuRowSelector,
-    videoNotFoundNoticeSelector
+    videoNotFoundNoticeSelector,
+    videoDanmukuCountTextSelector
 } from '../js/strategy/video.strategy'
 
 export default Vue.extend({
@@ -120,6 +121,10 @@ export default Vue.extend({
 
     mounted () {
         let video: HTMLVideoElement
+        const startPlaying = () => {
+            if (!this.valid) return
+            video.play()
+        }
         intervalTest(() => {
             video = $(videoSelector)[0]
             return video !== undefined
@@ -130,17 +135,19 @@ export default Vue.extend({
                 this.next()
             })
             video.addEventListener('emptied', this.validateURL)
-            // Wait until danmuku loads
+            // Check if should wait until danmukus load
             intervalTest(
-                () => $(videoPageDanmakuRowSelector)[0] !== undefined
-            , 200, 40, 20000).then(() => {
-                if (!this.valid) return
-                video.play()
-            }).catch(reason => {
-                // Start playing anyway if something wrong happened
-                if (!this.valid) return
-                video.play()
-            })
+                () => $(videoDanmukuCountTextSelector)[0] !== undefined
+            , 0, 75, 15000).then(() => {
+                const count = parseInt($(videoDanmukuCountTextSelector).text())
+                if (count === 0) startPlaying()
+                else {
+                    // Wait until danmuku loads
+                    intervalTest(
+                        () => $(videoPageDanmakuRowSelector)[0] !== undefined
+                    ).then(startPlaying).catch(startPlaying)
+                }
+            }).catch(startPlaying)
         }).catch(reason => {
             prompt(reason)
         })

@@ -8,5 +8,7 @@ export const videoPageBaseURL = 'https://www.bilibili.com/video/'
 export const videoPageURLReg = /^(?:http|https):\/\/www\.bilibili\.com\/video\/av(\d+)\/\?bpid=(\d+)&seed=(.+)$/
 // Select video element
 export const videoSelector = '.bilibili-player-video video'
+// Danmuku count selector
+export const videoDanmukuCountTextSelector = '.player-auxiliary-danmaku-number-span'
 // Select danmaku row
 export const videoPageDanmakuRowSelector = 'li.danmaku-info-row'
