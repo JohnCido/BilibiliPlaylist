@@ -14,7 +14,7 @@
       "48": "./img/icons/icon_48.png",
       "128": "./img/icons/icon_128.png"
     },
-    
+
     "background": {
         "scripts": [
             "./background.js"
@@ -52,16 +52,14 @@
         "default_title": "__MSG_shortName__",
         "default_popup": "./popup.html"
     },
-    
+
     "permissions": [
-        "tabs",
-        "activeTab",
         "storage"
     ],
 
     "web_accessible_resources": [
         "/*"
     ],
-    
-    "homepage_url": "https://space.bilibili.com/1528379/#!/index"
+
+    "homepage_url": "https://github.com/JohnCido/BilibiliPlaylist"
 }

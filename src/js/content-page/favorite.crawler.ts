@@ -44,7 +44,7 @@ export const crawlList = () => new Promise((resolve: (list?: IListModel) => void
     setTimeout(() => {
         if ($(pageIndexItemSelector).text() === '1') callback()
         else backToPageOne().then(callback).catch(callback)
-    }, 400)
+    }, 500)
 }, (callback: (err: Error | null, vids?: IVideoModel[]) => void) => {
     // Total videos count
     const total = parseInt($(currentFavVidsCountSelector).text())
@@ -122,7 +122,7 @@ function jumpToPage (ele: HTMLElement) {
     item.trigger(clickEventName)
     return intervalTest(() => {
         return ($(videoItemSelector)[0].dataset[videoItemFetchedDataFlag] !== videoItemFetchedDataFlag)
-    })
+    }, 0, 50, 15000)
 }
 
 /**

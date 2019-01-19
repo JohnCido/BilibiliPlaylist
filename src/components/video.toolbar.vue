@@ -123,7 +123,7 @@ export default Vue.extend({
         intervalTest(() => {
             video = $(videoSelector)[0]
             return video !== undefined
-        }, 50, 70).then(() => {
+        }, 0, 100, 10000).then(() => {
             video.preload = 'auto'
             video.addEventListener('ended', () => {
                 if (!this.valid) return
@@ -133,7 +133,7 @@ export default Vue.extend({
             // Wait until danmuku loads
             intervalTest(
                 () => $(videoPageDanmakuRowSelector)[0] !== undefined
-            , 100, 40, 2000).then(() => {
+            , 200, 40, 20000).then(() => {
                 if (!this.valid) return
                 video.play()
             }).catch(reason => {
@@ -163,7 +163,7 @@ export default Vue.extend({
 }
 
 .bl-video-toolbar {
-    @barw: 320px;
+    @barw: 360px;
     width: @barw;
     height: 48px;
     position: fixed;
@@ -178,20 +178,7 @@ export default Vue.extend({
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    z-index: 20000;
-
-    @wrapperw: 1312px;
-    @narroww: 1464px;
-    @media screen and (min-width: @narroww) {
-        transform: translateX(@wrapperw / 2 - @barw / 2);
-        margin: auto;
-        left: 0;
-        right: 0;
-    }
-
-    @media screen and (max-width: @narroww) {
-        right: 76px;
-    }
+    z-index: 2100000000;
 
     .footer {
         .flex-h(48px);
@@ -231,7 +218,7 @@ export default Vue.extend({
             }
 
             .next-up {
-                font-size: 10px;
+                font-size: 12px;
                 line-height: 16px;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -261,6 +248,7 @@ export default Vue.extend({
             justify-content: space-between;
             font-size: 12px;
             overflow: hidden;
+            transition: all ease-out .04s;
 
             .index {
                 .flex-w(32px);
@@ -293,7 +281,16 @@ export default Vue.extend({
                 padding-bottom: 8px;
             }
 
+            &:hover {
+                background-color: @azure-divider;
+
+                .name {
+                    color: @azure;
+                }
+            }
+
             &.active {
+                background-color: @azure-divider;
                 pointer-events: none;
                 cursor: default;
 
