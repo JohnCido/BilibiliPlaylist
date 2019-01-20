@@ -4,6 +4,12 @@
     "short_name": "__MSG_shortName__",
     "version": "2.0.1",
     "minimum_chrome_version": "52",
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "bilist.firefox.extension@cil",
+            "strict_min_version": "45.*"
+        }
+    },
 
     "default_locale": "zh_CN",
     "description": "__MSG_description__",
