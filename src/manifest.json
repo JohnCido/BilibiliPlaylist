@@ -6,8 +6,8 @@
     "minimum_chrome_version": "52",
     "browser_specific_settings": {
         "gecko": {
-            "id": "bilist.firefox.extension@cil",
-            "strict_min_version": "45.*"
+            "id": "bilist.firefox.extension@cil.rocks",
+            "strict_min_version": "48.0"
         }
     },
 
